@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Azyotter</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="accounts">アカウント</string>
+    <string name="add_account">アカウント追加</string>
+    <string name="login_azyotter">Azyotter にログイン</string>
+    <string name="getting_token">トークンを取得しています…</string>
+
+</resources>

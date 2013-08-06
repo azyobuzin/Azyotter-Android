@@ -23,7 +23,7 @@ import net.azyobuzi.azyotter.configuration.Account
 import android.widget.ListView
 
 class AccountsActivity extends ListActivity {
-	val authorization = new Authorization(this)
+	var Authorization authorization
 	val adapter = new AccountAdapter(this)
 	
 	override onCreate(Bundle savedInstanceState){
@@ -31,6 +31,8 @@ class AccountsActivity extends ListActivity {
 		setContentView(R.layout.activity_accounts)
 		listAdapter = adapter
 		listView.choiceMode = ListView.CHOICE_MODE_SINGLE
+		listView.onItemClickListener = [parent, view, position, id | Accounts.setActiveAccountIndex(position)]
+		onAccountsChanged()
 	}
 	
 	override onCreateOptionsMenu(Menu menu) {
@@ -47,6 +49,7 @@ class AccountsActivity extends ListActivity {
 				true
 			}
 			case R.id.action_add_account:{
+				authorization = new Authorization(this)
 				authorization.startAuthorization()
 				true
 			}
@@ -62,6 +65,9 @@ class AccountsActivity extends ListActivity {
 	def onAccountsChanged(){
 		actionBar.setDisplayHomeAsUpEnabled(!Accounts.list.empty)
 		adapter.notifyDataSetChanged()
+		val activeAccount = Accounts.activeAccountIndex
+		if (activeAccount != -1)
+			listView.setItemChecked(activeAccount, true)
 	}
 }
 

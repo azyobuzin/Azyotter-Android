@@ -29,4 +29,17 @@ class Accounts {
 		val id = PreferenceManager.getDefaultSharedPreferences(AzyotterApplication.instance).getLong("activeAccount", -1)
 		list.filter[it.id == id].head ?: list.head
 	}
+	
+	static def getActiveAccountIndex(){
+		list.indexOf(activeAccount)
+	}
+	
+	static def setActiveAccount(Account account){
+		PreferenceManager.getDefaultSharedPreferences(AzyotterApplication.instance).edit()
+			.putLong("activeAccount", if (account != null) account.id else -1).apply()
+	}
+	
+	static def setActiveAccountIndex(int index){
+		activeAccount = list.get(index)
+	}
 }

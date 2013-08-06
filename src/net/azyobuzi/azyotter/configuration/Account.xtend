@@ -51,4 +51,8 @@ class Account {
 	def toAccessToken(){
 		new AccessToken(OAuthToken, OAuthTokenSecret)
 	}
+	
+	def clear(){
+		sp.edit().clear().apply()
+	}
 }

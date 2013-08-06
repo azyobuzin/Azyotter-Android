@@ -21,6 +21,8 @@ import net.azyobuzi.azyotter.configuration.Accounts
 import android.widget.CheckedTextView
 import net.azyobuzi.azyotter.configuration.Account
 import android.widget.ListView
+import android.view.ContextMenu
+import android.widget.AdapterView
 
 class AccountsActivity extends ListActivity {
 	var Authorization authorization
@@ -33,6 +35,7 @@ class AccountsActivity extends ListActivity {
 		listView.choiceMode = ListView.CHOICE_MODE_SINGLE
 		listView.onItemClickListener = [parent, view, position, id | Accounts.setActiveAccountIndex(position)]
 		onAccountsChanged()
+		registerForContextMenu(listView)
 	}
 	
 	override onCreateOptionsMenu(Menu menu) {
@@ -68,6 +71,39 @@ class AccountsActivity extends ListActivity {
 		val activeAccount = Accounts.activeAccountIndex
 		if (activeAccount != -1)
 			listView.setItemChecked(activeAccount, true)
+	}
+	
+	override onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo){
+		val position = (menuInfo as AdapterView.AdapterContextMenuInfo).position
+		val account = Accounts.list.get(position)
+		
+		menu.setHeaderTitle(account.screenName)
+		
+		val upMenu = menu.add(R.string.up).setOnMenuItemClickListener([
+			val item = Accounts.list.remove(position)
+			Accounts.list.add(position - 1, item)
+			Accounts.save()
+			onAccountsChanged()
+			true
+		])
+		if (position == 0) upMenu.setEnabled(false)
+		
+		val downMenu = menu.add(R.string.down).setOnMenuItemClickListener([
+			val item = Accounts.list.remove(position)
+			Accounts.list.add(position + 1, item)
+			Accounts.save()
+			onAccountsChanged()
+			true
+		])
+		if (position == Accounts.list.size() - 1) downMenu.setEnabled(false)
+		
+		val removeMenu = menu.add(R.string.remove).setOnMenuItemClickListener([
+			Accounts.list.remove(position).clear()
+			Accounts.save()
+			onAccountsChanged()
+			true
+		])
+		if (Accounts.list.size() <= 1) removeMenu.setEnabled(false)
 	}
 }
 

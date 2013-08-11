@@ -10,5 +10,6 @@
     <string name="up">上へ</string>
     <string name="down">下へ</string>
     <string name="remove">削除</string>
+    <string name="profile_image">プロフィール画像</string>
 
 </resources>

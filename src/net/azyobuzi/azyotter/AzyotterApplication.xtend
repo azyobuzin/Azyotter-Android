@@ -2,6 +2,7 @@ package net.azyobuzi.azyotter
 
 import android.app.Application
 import net.azyobuzi.azyotter.configuration.Accounts
+import net.azyobuzi.azyotter.configuration.Tabs
 
 class AzyotterApplication extends Application {
 	public static AzyotterApplication instance
@@ -17,5 +18,6 @@ class AzyotterApplication extends Application {
 		System.setProperty("twitter4j.oauth.consumerSecret", "IDMOATndLC4P7Jd4paEcYm1aVZUxTcZc0wWMS5UQ")
 		
 		Accounts.load()
+		Tabs.load()
 	}
 }

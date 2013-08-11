@@ -161,13 +161,15 @@ class Authorization extends TwitterAdapter {
 			handler.post[|
 				dialog.dismiss()
 				dialog = null
-				Accounts.list.add(new Account(token.userId) => [
-					screenName = token.screenName
-					OAuthToken = token.token
-					OAuthTokenSecret = token.tokenSecret
-				])
-				Accounts.save()
-				activity.onAccountsChanged()
+				if (!Accounts.list.exists[it.id == token.userId]){
+					Accounts.list.add(new Account(token.userId) => [
+						screenName = token.screenName
+						OAuthToken = token.token
+						OAuthTokenSecret = token.tokenSecret
+					])
+					Accounts.save()
+					activity.onAccountsChanged()
+				}
 			]
 		}
 	}
@@ -193,7 +195,7 @@ class AccountAdapter extends BaseAdapter{
 	}
 	
 	override getView(int position, View convertView, ViewGroup parent) {
-		val view = (convertView ?: activity.layoutInflater.inflate(android.R.layout.simple_list_item_single_choice, null)) as CheckedTextView
+		val view = (convertView ?: activity.layoutInflater.inflate(android.R.layout.simple_list_item_single_choice, parent, false)) as CheckedTextView
 		view.setText((getItem(position) as Account).screenName)
 		view
 	}

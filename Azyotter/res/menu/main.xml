@@ -1,4 +1,4 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/action_accounts" android:showAsAction="never" android:title="@string/accounts"></item>
-
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:my="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/action_accounts" android:title="@string/accounts"></item>
+	<item android:id="@+id/action_refresh" android:title="@string/refresh" my:showAsAction="ifRoom" android:icon="@drawable/ic_menu_refresh"></item>
 </menu>

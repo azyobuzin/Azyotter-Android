@@ -2,7 +2,6 @@
 <resources>
 
     <string name="app_name">Azyotter</string>
-    <string name="hello_world">Hello world!</string>
     <string name="accounts">アカウント</string>
     <string name="add_account">アカウント追加</string>
     <string name="login_azyotter">Azyotter にログイン</string>
@@ -11,5 +10,6 @@
     <string name="down">下へ</string>
     <string name="remove">削除</string>
     <string name="profile_image">プロフィール画像</string>
+    <string name="refresh">更新</string>
 
 </resources>

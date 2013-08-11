@@ -20,6 +20,7 @@ class Tabs {
 			val idBase = System.currentTimeMillis
 			list.add(new Tab(idBase) => [
 				type = TabType.HOME
+				title = "Home"
 			])
 			/*list.add(new Tab(idBase + 1) => [
 				type = TabType.MENTIONS
@@ -33,6 +34,8 @@ class Tabs {
 	static def getList(){
 		list
 	}
+	
+	public static var boolean modified = false
 	
 	static def save(){
 		PreferenceManager.getDefaultSharedPreferences(AzyotterApplication.instance)

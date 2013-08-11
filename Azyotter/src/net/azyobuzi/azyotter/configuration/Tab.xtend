@@ -12,6 +12,7 @@ class Tab {
 		this.id = id
 		sp = AzyotterApplication.instance.getSharedPreferences("tab_" + id, Context.MODE_PRIVATE)
 		type = TabType.valueOf(sp.getString("type", TabType.HOME.name()))
+		title = sp.getString("title", "Tab")
 		_isAllUsers = sp.getBoolean("isAllUsers", true)
 		users = Iterables.toArray(sp.getString("users", "").split(",")
 			.filter[!Strings.isNullOrEmpty(it)]
@@ -32,6 +33,15 @@ class Tab {
 	def setType(TabType value){
 		type = value
 		sp.edit().putString("type", value.name()).apply()
+	}
+	
+	var String title
+	def getTitle(){
+		title
+	}
+	def setTitle(String value){
+		title = value
+		sp.edit().putString("title", value).apply()
 	}
 	
 	var boolean _isAllUsers

@@ -12,6 +12,7 @@ import android.app.Activity
 import net.azyobuzi.azyotter.R
 import android.widget.LinearLayout
 import java.text.DateFormat
+import java.io.Serializable
 
 class TweetAdapter extends BaseAdapter {
 	new(Activity activity){
@@ -56,7 +57,7 @@ class TweetAdapter extends BaseAdapter {
 	
 }
 
-class TweetComparator implements Comparator<Status> {
+class TweetComparator implements Comparator<Status>, Serializable {
 	override compare(Status lhs, Status rhs) {
 		val x = lhs.createdAt.compareTo(rhs.createdAt)
 		if (x != 0) - x else - lhs.compareTo(rhs)

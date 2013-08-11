@@ -10,6 +10,7 @@ import net.azyobuzi.azyotter.configuration.Accounts
 import net.azyobuzi.azyotter.TwitterClient
 import twitter4j.Paging
 import java.util.ArrayList
+import android.os.Handler
 
 class HomeTimelineFragment extends TimelineFragment {
 	static def createInstance(Tab tab){
@@ -19,17 +20,23 @@ class HomeTimelineFragment extends TimelineFragment {
 	}
 	
 	var Tab tab
-	val adapter = new TweetAdapter(activity)
+	var TweetAdapter adapter
+	var Handler handler
 	
 	override onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState)
 		
-		if (savedInstanceState.containsKey("tab_id")){
-			tab = Tabs.list.filter[it.id == savedInstanceState.getLong("tab_id")].head
-		}
+		adapter = new TweetAdapter(activity)
+		handler = new Handler()
 		
-		if (savedInstanceState.containsKey("tweets")){
-			adapter.tweetsSet  = savedInstanceState.getSerializable("tweets") as TreeSet<Status>
+		if (savedInstanceState != null){
+			if (savedInstanceState.containsKey("tab_id")){
+				tab = Tabs.list.filter[it.id == savedInstanceState.getLong("tab_id")].head
+			}
+			
+			if (savedInstanceState.containsKey("tweets")){
+				adapter.tweetsSet  = savedInstanceState.getSerializable("tweets") as TreeSet<Status>
+			}
 		}
 		
 		setListAdapter(adapter)
@@ -65,8 +72,10 @@ class HomeTimelineFragment extends TimelineFragment {
 	private def completeReload(Iterable<Status> newTweets){
 		adapter.tweetsSet.clear()
 		adapter.tweetsSet.addAll(newTweets)
-		adapter.notifyDataSetChanged()
-		completedReload()
+		handler.post([|
+			adapter.notifyDataSetChanged()
+			completedReload()
+		])
 	}
 	
 }

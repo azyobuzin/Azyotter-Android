@@ -1,6 +1,5 @@
 package net.azyobuzi.azyotter.activities
 
-import android.app.ListActivity
 import android.os.Bundle
 import net.azyobuzi.azyotter.R
 import android.view.Menu
@@ -23,15 +22,19 @@ import net.azyobuzi.azyotter.configuration.Account
 import android.widget.ListView
 import android.view.ContextMenu
 import android.widget.AdapterView
+import android.support.v7.app.ActionBarActivity
 
-class AccountsActivity extends ListActivity {
+class AccountsActivity extends ActionBarActivity {
 	var Authorization authorization
 	val adapter = new AccountAdapter(this)
+	
+	public var ListView listView
 	
 	override onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_accounts)
-		listAdapter = adapter
+		listView = findViewById(android.R.id.list) as ListView
+		listView.adapter = adapter
 		listView.choiceMode = ListView.CHOICE_MODE_SINGLE
 		listView.onItemClickListener = [parent, view, position, id | Accounts.setActiveAccountIndex(position)]
 		onAccountsChanged()

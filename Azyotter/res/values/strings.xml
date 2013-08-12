@@ -11,5 +11,6 @@
     <string name="remove">削除</string>
     <string name="profile_image">プロフィール画像</string>
     <string name="refresh">更新</string>
+    <string name="retweeted">リツイート</string>
 
 </resources>

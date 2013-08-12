@@ -41,6 +41,7 @@ class TweetAdapter extends BaseAdapter {
 			name = view.findViewById(R.id.name) as TextView
 			text = view.findViewById(R.id.text) as TextView
 			dateAndSource = view.findViewById(R.id.date_source) as TextView
+			retweetedBy = view.findViewById(R.id.retweeted_by) as TextView
 		]
 		view.tag = viewHolder
 		
@@ -53,7 +54,11 @@ class TweetAdapter extends BaseAdapter {
 		viewHolder.text.text = tweet.displayText
 		viewHolder.dateAndSource.text = (if (tweet.model.retweet) tweet.retweetedCreatedAt else tweet.createdAt)
 			+ " / via " + if (tweet.model.retweet) tweet.retweetedSourceName else tweet.sourceName
-		//TODO:Retweeted by
+		if (tweet.model.retweet){
+			viewHolder.retweetedBy.visibility = View.VISIBLE
+			viewHolder.retweetedBy.text = "RT by " + tweet.model.user.name
+		}
+		else viewHolder.retweetedBy.visibility = View.GONE
 		
 		view
 	}
@@ -72,4 +77,5 @@ class TweetViewHolder{
 	@Property TextView name
 	@Property TextView text
 	@Property TextView dateAndSource
+	@Property TextView retweetedBy
 }

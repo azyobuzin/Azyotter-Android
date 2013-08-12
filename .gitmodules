@@ -1,0 +1,3 @@
+[submodule "Azyotter/UrlImageView"]
+	path = Azyotter/UrlImageView
+	url = git@github.com:sharakova/UrlImageView.git

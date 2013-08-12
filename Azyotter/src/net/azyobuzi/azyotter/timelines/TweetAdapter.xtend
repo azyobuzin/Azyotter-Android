@@ -3,7 +3,6 @@ package net.azyobuzi.azyotter.timelines
 import android.widget.BaseAdapter
 import android.view.View
 import android.view.ViewGroup
-import twitter4j.Status
 import java.util.TreeSet
 import java.util.Comparator
 import net.azyobuzi.azyotter.ProfileImageView
@@ -11,7 +10,6 @@ import android.widget.TextView
 import android.app.Activity
 import net.azyobuzi.azyotter.R
 import android.widget.LinearLayout
-import java.text.DateFormat
 import java.io.Serializable
 
 class TweetAdapter extends BaseAdapter {
@@ -21,7 +19,7 @@ class TweetAdapter extends BaseAdapter {
 	
 	val Activity activity
 	
-	@Property TreeSet<Status> tweetsSet = new TreeSet<Status>(new TweetComparator())
+	@Property TreeSet<TweetViewModel> tweetsSet = new TreeSet<TweetViewModel>(new TweetComparator())
 	
 	override getCount() {
 		tweetsSet.size()
@@ -36,7 +34,7 @@ class TweetAdapter extends BaseAdapter {
 	}
 	
 	override getView(int position, View convertView, ViewGroup parent) {
-		val tweet = getItem(position) as Status
+		val tweet = getItem(position) as TweetViewModel
 		val view = (convertView ?: activity.layoutInflater.inflate(R.layout.tweet, parent, false)) as LinearLayout
 		val viewHolder = (view.tag as TweetViewHolder) ?: new TweetViewHolder() => [
 			profileImage = view.findViewById(R.id.profile_image) as ProfileImageView
@@ -47,20 +45,22 @@ class TweetAdapter extends BaseAdapter {
 		view.tag = viewHolder
 		
 		//TODO:ProfileImage
-		viewHolder.name.text = tweet.user.screenName + " / " + tweet.user.name
-		viewHolder.text.text = tweet.text //TODO:Entities の処理
-		viewHolder.dateAndSource.text =
-			DateFormat.getDateTimeInstance().format(tweet.createdAt) + " / via " + tweet.source //TODO:source の処理
+		viewHolder.name.text = (if (tweet.model.retweet) tweet.model.retweetedStatus.user.screenName else tweet.model.user.screenName)
+			+ " / " + if (tweet.model.retweet) tweet.model.retweetedStatus.user.name else tweet.model.user.name
+		viewHolder.text.text = tweet.displayText
+		viewHolder.dateAndSource.text = (if (tweet.model.retweet) tweet.retweetedCreatedAt else tweet.createdAt)
+			+ " / via " + if (tweet.model.retweet) tweet.retweetedSourceName else tweet.sourceName
+		//TODO:Retweeted by
 		
 		view
 	}
 	
 }
 
-class TweetComparator implements Comparator<Status>, Serializable {
-	override compare(Status lhs, Status rhs) {
-		val x = lhs.createdAt.compareTo(rhs.createdAt)
-		if (x != 0) - x else - lhs.compareTo(rhs)
+class TweetComparator implements Comparator<TweetViewModel>, Serializable {
+	override compare(TweetViewModel lhs, TweetViewModel rhs) {
+		val x = lhs.model.createdAt.compareTo(rhs.model.createdAt)
+		if (x != 0) - x else - lhs.model.compareTo(rhs.model)
 	}
 }
 

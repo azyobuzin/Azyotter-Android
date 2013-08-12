@@ -35,7 +35,7 @@ class HomeTimelineFragment extends TimelineFragment {
 			}
 			
 			if (savedInstanceState.containsKey("tweets")){
-				adapter.tweetsSet  = savedInstanceState.getSerializable("tweets") as TreeSet<Status>
+				adapter.tweetsSet  = savedInstanceState.getSerializable("tweets") as TreeSet<TweetViewModel>
 			}
 		}
 		
@@ -71,7 +71,7 @@ class HomeTimelineFragment extends TimelineFragment {
 	
 	private def completeReload(Iterable<Status> newTweets){
 		adapter.tweetsSet.clear()
-		adapter.tweetsSet.addAll(newTweets)
+		adapter.tweetsSet.addAll(newTweets.map[new TweetViewModel(it)])
 		handler.post([|
 			adapter.notifyDataSetChanged()
 			completedReload()

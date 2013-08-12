@@ -22,11 +22,13 @@ class Tabs {
 				type = TabType.HOME
 				title = "Home"
 			])
-			/*list.add(new Tab(idBase + 1) => [
+			list.add(new Tab(idBase + 1) => [
 				type = TabType.MENTIONS
-			])*/
+				title = "Mentions"
+			])
 			/*list.add(new Tab(idBase + 2) => [
 				type = TabType.DIRECT_MESSAGES
+				title = "DirectMessages"
 			])*/
 		}
 	}

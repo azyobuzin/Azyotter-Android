@@ -53,6 +53,15 @@ class TwitterClient {
 		])
 		twitter.getHomeTimeline(paging)
 	}
+	
+	def getMentions(Paging paging, TwitterCallback<ResponseList<Status>> callback, TwitterExceptionListener onException){
+		val twitter = twitterInstance
+		twitter.addListener(new AnonymousTwitterListener() => [
+			onGotMentions = callback
+			onExceptionListener = onException
+		])
+		twitter.getMentions(paging)
+	}
 }
 
 interface TwitterCallback<T>{

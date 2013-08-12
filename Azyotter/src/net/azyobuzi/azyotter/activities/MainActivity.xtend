@@ -14,6 +14,7 @@ import java.util.ArrayList
 import net.azyobuzi.azyotter.configuration.TabType
 import net.azyobuzi.azyotter.timelines.HomeTimelineFragment
 import android.support.v4.app.FragmentStatePagerAdapter
+import net.azyobuzi.azyotter.timelines.MentionsTimelineFragment
 
 class MainActivity extends ActionBarActivity {
 	var ViewPager viewPager
@@ -122,6 +123,7 @@ class TimelinePagerAdapter extends FragmentStatePagerAdapter{
 		Tabs.list.forEach[
 			val fragment = switch it.type{
 				case TabType.HOME: HomeTimelineFragment.createInstance(it)
+				case TabType.MENTIONS: MentionsTimelineFragment.createInstance(it)
 				default: null
 			}
 			fragment.onCompleteReload = [| activity.completedReload()]

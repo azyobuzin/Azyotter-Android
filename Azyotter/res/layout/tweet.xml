@@ -5,7 +5,7 @@
     android:orientation="horizontal"
     android:padding="5dp">
 
-    <net.azyobuzi.azyotter.ProfileImageView
+    <jp.sharakova.android.urlimageview.UrlImageView
         android:id="@+id/profile_image"
         android:layout_width="48dp"
         android:layout_height="48dp"

@@ -5,12 +5,12 @@ import android.view.View
 import android.view.ViewGroup
 import java.util.TreeSet
 import java.util.Comparator
-import net.azyobuzi.azyotter.ProfileImageView
 import android.widget.TextView
 import android.app.Activity
 import net.azyobuzi.azyotter.R
 import android.widget.LinearLayout
 import java.io.Serializable
+import jp.sharakova.android.urlimageview.UrlImageView
 
 class TweetAdapter extends BaseAdapter {
 	new(Activity activity){
@@ -37,14 +37,17 @@ class TweetAdapter extends BaseAdapter {
 		val tweet = getItem(position) as TweetViewModel
 		val view = (convertView ?: activity.layoutInflater.inflate(R.layout.tweet, parent, false)) as LinearLayout
 		val viewHolder = (view.tag as TweetViewHolder) ?: new TweetViewHolder() => [
-			profileImage = view.findViewById(R.id.profile_image) as ProfileImageView
+			profileImage = view.findViewById(R.id.profile_image) as UrlImageView
 			name = view.findViewById(R.id.name) as TextView
 			text = view.findViewById(R.id.text) as TextView
 			dateAndSource = view.findViewById(R.id.date_source) as TextView
 		]
 		view.tag = viewHolder
 		
-		//TODO:ProfileImage
+		viewHolder.profileImage.setImageUrl(
+			if (tweet.model.retweet) tweet.model.retweetedStatus.user.profileImageURLHttps
+			else tweet.model.user.profileImageURLHttps
+		)
 		viewHolder.name.text = (if (tweet.model.retweet) tweet.model.retweetedStatus.user.screenName else tweet.model.user.screenName)
 			+ " / " + if (tweet.model.retweet) tweet.model.retweetedStatus.user.name else tweet.model.user.name
 		viewHolder.text.text = tweet.displayText
@@ -65,7 +68,7 @@ class TweetComparator implements Comparator<TweetViewModel>, Serializable {
 }
 
 class TweetViewHolder{
-	@Property ProfileImageView profileImage
+	@Property UrlImageView profileImage
 	@Property TextView name
 	@Property TextView text
 	@Property TextView dateAndSource

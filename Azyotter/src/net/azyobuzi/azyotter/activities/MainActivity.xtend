@@ -15,6 +15,7 @@ import net.azyobuzi.azyotter.configuration.TabType
 import net.azyobuzi.azyotter.timelines.HomeTimelineFragment
 import android.support.v4.app.FragmentStatePagerAdapter
 import net.azyobuzi.azyotter.timelines.MentionsTimelineFragment
+import android.net.Uri
 
 class MainActivity extends ActionBarActivity {
 	var ViewPager viewPager
@@ -54,13 +55,17 @@ class MainActivity extends ActionBarActivity {
 	
 	override onOptionsItemSelected(MenuItem item){
 		switch item.itemId {
-			case R.id.action_accounts:{
-				startActivity(new Intent(this, AccountsActivity))
+			case R.id.action_twitter:{
+				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/")))
 				true
 			}
 			case R.id.action_refresh:{
 				startedReload()
 				adapter.fragments.get(viewPager.currentItem).reload()
+				true
+			}
+			case R.id.action_accounts:{
+				startActivity(new Intent(this, AccountsActivity))
 				true
 			}
 			default: super.onOptionsItemSelected(item)

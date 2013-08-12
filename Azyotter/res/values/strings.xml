@@ -12,5 +12,6 @@
     <string name="profile_image">プロフィール画像</string>
     <string name="refresh">更新</string>
     <string name="retweeted">リツイート</string>
+    <string name="twitter">Twitter</string>
 
 </resources>

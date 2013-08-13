@@ -50,7 +50,7 @@ class MainActivity extends ActionBarActivity {
 		getMenuInflater().inflate(R.menu.main, menu)
 		refreshMenu = menu.findItem(R.id.action_refresh)
 		if (reloadingCount > 0){
-			MenuItemCompat.setActionView(refreshMenu, R.layout.progress_action_view)
+			MenuItemCompat.setActionView(refreshMenu, R.layout.actionbar_indeterminate_progress)
 		}
 		true
 	}
@@ -85,7 +85,7 @@ class MainActivity extends ActionBarActivity {
 	def startedReload(){
 		reloadingCount = reloadingCount + 1
 		if (reloadingCount == 1 && refreshMenu != null){
-			MenuItemCompat.setActionView(refreshMenu, R.layout.progress_action_view)
+			MenuItemCompat.setActionView(refreshMenu, R.layout.actionbar_indeterminate_progress)
 		}
 	}
 	

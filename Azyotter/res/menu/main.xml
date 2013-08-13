@@ -1,5 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:my="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/action_twitter" android:title="@string/twitter" my:showAsAction="always" android:icon="@drawable/bird"></item>
-	<item android:id="@+id/action_refresh" android:title="@string/refresh" my:showAsAction="ifRoom" android:icon="@drawable/navigation_refresh"></item>
+	<item android:id="@+id/action_refresh" android:title="@string/refresh" my:showAsAction="always" android:icon="@drawable/navigation_refresh"></item>
+    <item android:id="@+id/action_post" android:title="@string/tweet" my:showAsAction="always" android:icon="@drawable/content_edit"></item>
     <item android:id="@+id/action_accounts" android:title="@string/accounts"></item>
 </menu>

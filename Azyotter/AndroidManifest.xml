@@ -32,6 +32,7 @@
                 <data android:host="callback" android:scheme="net.azyobuzi.azyotter"/>
             </intent-filter>
         </activity>
+        <activity android:label="@string/tweet" android:name=".activities.UpdateStatusActivity"></activity>
     </application>
 
 </manifest>

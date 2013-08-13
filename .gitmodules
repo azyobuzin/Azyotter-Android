@@ -1,3 +1,6 @@
 [submodule "Azyotter/UrlImageView"]
 	path = Azyotter/UrlImageView
 	url = git@github.com:sharakova/UrlImageView.git
+[submodule "Azyotter/twitter-text-java"]
+	path = Azyotter/twitter-text-java
+	url = git@github.com:twitter/twitter-text-java.git

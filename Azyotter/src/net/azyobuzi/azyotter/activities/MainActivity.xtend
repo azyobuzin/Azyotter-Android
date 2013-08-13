@@ -40,14 +40,14 @@ class MainActivity extends ActionBarActivity {
 		viewPager = findViewById(R.id.pager) as ViewPager
 		adapter = new TimelinePagerAdapter(this)
 		viewPager.adapter = adapter
-		adapter.fragments.forEach[
+		/*adapter.fragments.forEach[
 			startedReload()
 			it.reload()
-		]
+		]*/
 	}
 	
 	override onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.main, menu)
+		menuInflater.inflate(R.menu.main, menu)
 		refreshMenu = menu.findItem(R.id.action_refresh)
 		if (reloadingCount > 0){
 			MenuItemCompat.setActionView(refreshMenu, R.layout.actionbar_indeterminate_progress)
@@ -64,6 +64,10 @@ class MainActivity extends ActionBarActivity {
 			case R.id.action_refresh:{
 				startedReload()
 				adapter.fragments.get(viewPager.currentItem).reload()
+				true
+			}
+			case R.id.action_post:{
+				startActivity(new Intent(this, UpdateStatusActivity).putExtra("internal", true))
 				true
 			}
 			case R.id.action_accounts:{

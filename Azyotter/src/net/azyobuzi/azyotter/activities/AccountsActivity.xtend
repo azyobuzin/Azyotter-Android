@@ -69,7 +69,7 @@ class AccountsActivity extends ActionBarActivity {
 	}
 	
 	def onAccountsChanged(){
-		supportActionBar.setDisplayHomeAsUpEnabled(!Accounts.list.empty)
+		supportActionBar.displayHomeAsUpEnabled = !Accounts.list.empty
 		adapter.notifyDataSetChanged()
 		val activeAccount = Accounts.activeAccountIndex
 		if (activeAccount != -1)

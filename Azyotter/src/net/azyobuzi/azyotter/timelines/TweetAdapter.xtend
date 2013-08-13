@@ -56,7 +56,7 @@ class TweetAdapter extends BaseAdapter {
 			+ " / via " + if (tweet.model.retweet) tweet.retweetedSourceName else tweet.sourceName
 		if (tweet.model.retweet){
 			viewHolder.retweetedBy.visibility = View.VISIBLE
-			viewHolder.retweetedBy.text = "RT by " + tweet.model.user.name
+			viewHolder.retweetedBy.text = "RT by " + tweet.model.user.screenName
 		}
 		else viewHolder.retweetedBy.visibility = View.GONE
 		

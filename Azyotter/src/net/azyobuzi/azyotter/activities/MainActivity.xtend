@@ -16,6 +16,7 @@ import net.azyobuzi.azyotter.timelines.HomeTimelineFragment
 import android.support.v4.app.FragmentStatePagerAdapter
 import net.azyobuzi.azyotter.timelines.MentionsTimelineFragment
 import android.net.Uri
+import android.support.v4.view.MenuItemCompat
 
 class MainActivity extends ActionBarActivity {
 	var ViewPager viewPager
@@ -34,6 +35,7 @@ class MainActivity extends ActionBarActivity {
 		}
 		
 		setContentView(R.layout.activity_main)
+		supportActionBar.displayShowTitleEnabled = false
 		
 		viewPager = findViewById(R.id.pager) as ViewPager
 		adapter = new TimelinePagerAdapter(this)
@@ -48,7 +50,7 @@ class MainActivity extends ActionBarActivity {
 		getMenuInflater().inflate(R.menu.main, menu)
 		refreshMenu = menu.findItem(R.id.action_refresh)
 		if (reloadingCount > 0){
-			refreshMenu.actionView = R.layout.progress_action_view
+			MenuItemCompat.setActionView(refreshMenu, R.layout.progress_action_view)
 		}
 		true
 	}
@@ -83,14 +85,14 @@ class MainActivity extends ActionBarActivity {
 	def startedReload(){
 		reloadingCount = reloadingCount + 1
 		if (reloadingCount == 1 && refreshMenu != null){
-			refreshMenu.actionView = R.layout.progress_action_view
+			MenuItemCompat.setActionView(refreshMenu, R.layout.progress_action_view)
 		}
 	}
 	
 	def completedReload(){
 		reloadingCount = reloadingCount - 1
 		if (reloadingCount <= 0){
-			refreshMenu.actionView = null
+			MenuItemCompat.setActionView(refreshMenu, null)
 		}
 	}
 	

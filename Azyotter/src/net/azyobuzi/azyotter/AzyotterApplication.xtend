@@ -3,6 +3,7 @@ package net.azyobuzi.azyotter
 import android.app.Application
 import net.azyobuzi.azyotter.configuration.Accounts
 import net.azyobuzi.azyotter.configuration.Tabs
+import android.app.NotificationManager
 
 class AzyotterApplication extends Application {
 	public static AzyotterApplication instance
@@ -19,5 +20,7 @@ class AzyotterApplication extends Application {
 		
 		Accounts.load()
 		Tabs.load()
+		
+		Notifications.initialize(getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
 	}
 }

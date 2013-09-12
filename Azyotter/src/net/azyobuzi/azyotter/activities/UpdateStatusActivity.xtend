@@ -10,6 +10,12 @@ import android.text.TextWatcher
 import android.text.Editable
 import com.twitter.Validator
 import android.content.Intent
+import net.azyobuzi.azyotter.configuration.Accounts
+import twitter4j.StatusUpdate
+import net.azyobuzi.azyotter.TwitterClient
+import android.support.v4.app.NotificationCompat
+import android.app.PendingIntent
+import net.azyobuzi.azyotter.Notifications
 
 class UpdateStatusActivity extends ActionBarActivity {
 	public static val singletonValidator = new Validator()
@@ -25,6 +31,8 @@ class UpdateStatusActivity extends ActionBarActivity {
 				
 		status = findViewById(R.id.status) as EditText
 		status.addTextChangedListener(new StatusTextWatcher(this))
+		
+		status.setText(intent.getStringExtra("text"))
 	}
 	
 	override onCreateOptionsMenu(Menu menu) {
@@ -51,7 +59,25 @@ class UpdateStatusActivity extends ActionBarActivity {
 				true
 			}
 			case R.id.action_post:{
-				//TODO
+				val statusText = status.text.toString()
+				val statusUpdate = new StatusUpdate(statusText)
+				new TwitterClient(Accounts.activeAccount).updateStatus(statusUpdate, [
+					//やることない
+				], [te, method |
+					Notifications.notify(Notifications.TWEET_FAILED,
+						new NotificationCompat.Builder(this)
+							.setSmallIcon(android.R.drawable.stat_notify_error)
+							.setContentTitle(getText(R.string.tweet_failed))
+							.setContentText(te.errorMessage)
+							.setContentIntent(PendingIntent.getActivity(this, 0,
+								new Intent(this, class).putExtra("text", statusText),
+								0
+							))
+							.setAutoCancel(true)
+							.build()
+						)
+				])
+				finish()
 				true
 			}
 			default: super.onOptionsItemSelected(item)

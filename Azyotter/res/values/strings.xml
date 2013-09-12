@@ -16,5 +16,6 @@
     <string name="tweet">ツイート</string>
     <string name="reply">返信</string>
     <string name="counter_default">140</string>
+    <string name="tweet_failed">ツイート失敗</string>
 
 </resources>

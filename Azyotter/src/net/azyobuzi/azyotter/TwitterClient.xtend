@@ -31,6 +31,7 @@ import twitter4j.TwitterException
 import twitter4j.TwitterMethod
 import twitter4j.QueryResult
 import twitter4j.Paging
+import twitter4j.StatusUpdate
 
 class TwitterClient {
 	static val factory = new AsyncTwitterFactory()
@@ -61,6 +62,15 @@ class TwitterClient {
 			onExceptionListener = onException
 		])
 		twitter.getMentions(paging)
+	}
+	
+	def updateStatus(StatusUpdate statusUpdate, TwitterCallback<Status> callback, TwitterExceptionListener onException){
+		var twitter = twitterInstance
+		twitter.addListener(new AnonymousTwitterListener() => [
+			onUpdatedStatus = callback
+			onExceptionListener = onException
+		])
+		twitter.updateStatus(statusUpdate)
 	}
 }
 

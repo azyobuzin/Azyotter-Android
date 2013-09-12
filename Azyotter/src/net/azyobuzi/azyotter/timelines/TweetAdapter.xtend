@@ -45,10 +45,10 @@ class TweetAdapter extends BaseAdapter {
 		]
 		view.tag = viewHolder
 		
-		viewHolder.profileImage.setImageUrl(
+		viewHolder.profileImage.imageBitmap = null
+		viewHolder.profileImage.imageUrl =
 			if (tweet.model.retweet) tweet.model.retweetedStatus.user.profileImageURLHttps
 			else tweet.model.user.profileImageURLHttps
-		)
 		viewHolder.name.text = (if (tweet.model.retweet) tweet.model.retweetedStatus.user.screenName else tweet.model.user.screenName)
 			+ " / " + if (tweet.model.retweet) tweet.model.retweetedStatus.user.name else tweet.model.user.name
 		viewHolder.text.text = tweet.displayText

@@ -2,4 +2,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:my="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/action_counter" android:title="@string/counter_default" android:enabled="false" my:showAsAction="always"></item>
     <item android:id="@+id/action_post" android:title="@string/tweet" my:showAsAction="always" android:icon="@drawable/social_send_now"></item>
+    <item android:id="@+id/action_attach_picture" android:title="@string/attach_picture" android:checkable="true"></item>
 </menu>

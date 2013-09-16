@@ -16,13 +16,18 @@ import net.azyobuzi.azyotter.TwitterClient
 import android.support.v4.app.NotificationCompat
 import android.app.PendingIntent
 import net.azyobuzi.azyotter.Notifications
+import android.net.Uri
 
 class UpdateStatusActivity extends ActionBarActivity {
 	public static val singletonValidator = new Validator()
+	public static val PICK_PICTRUE = 0
 		
 	var MenuItem counter
 	var MenuItem postMenu
 	var EditText status
+	var MenuItem attachPicture
+	
+	Uri pictureUri
 	
 	override onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState)
@@ -39,7 +44,9 @@ class UpdateStatusActivity extends ActionBarActivity {
 		menuInflater.inflate(R.menu.update_status, menu)
 		counter = menu.findItem(R.id.action_counter)
 		postMenu = menu.findItem(R.id.action_post)
+		attachPicture = menu.findItem(R.id.action_attach_picture)
 		changeCounter()
+		attachPicture.checked = pictureUri != null
 		true
 	}
 	
@@ -61,6 +68,15 @@ class UpdateStatusActivity extends ActionBarActivity {
 			case R.id.action_post:{
 				val statusText = status.text.toString()
 				val statusUpdate = new StatusUpdate(statusText)
+				
+				if (pictureUri != null) {
+					try {
+						statusUpdate.setMedia("media", contentResolver.openInputStream(pictureUri))
+					} catch (Exception e) {
+						e.printStackTrace()
+					}
+				}
+				
 				new TwitterClient(Accounts.activeAccount).updateStatus(statusUpdate, [
 					//やることない
 				], [te, method |
@@ -80,8 +96,31 @@ class UpdateStatusActivity extends ActionBarActivity {
 				finish()
 				true
 			}
+			case R.id.action_attach_picture:{
+				if (pictureUri == null) {
+					startActivityForResult(
+						new Intent(Intent.ACTION_GET_CONTENT).setType("image/*"),
+						PICK_PICTRUE
+					)
+				} else {
+					pictureUri = null
+					attachPicture.checked = false
+				}
+				true
+			}
 			default: super.onOptionsItemSelected(item)
 		}
+	}
+	
+	override protected onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (resultCode == RESULT_OK) {
+			if (requestCode == PICK_PICTRUE) {
+				pictureUri = data.data
+				attachPicture.checked = true
+			}
+		}
+		
+		super.onActivityResult(requestCode, resultCode, data)
 	}
 	
 }

@@ -22,7 +22,6 @@ import twitter4j.OEmbed
 import twitter4j.Trends
 import java.util.Map
 import twitter4j.RateLimitStatus
-import twitter4j.RelatedResults
 import twitter4j.Relationship
 import twitter4j.SimilarPlaces
 import twitter4j.Category
@@ -311,11 +310,6 @@ class AnonymousTwitterListener implements TwitterListener{
 	@Property TwitterCallback<Map<String,RateLimitStatus>> onGotRateLimitStatus
 	override gotRateLimitStatus(Map<String,RateLimitStatus> arg0) {
 		onGotRateLimitStatus?.callback(arg0)
-	}
-	
-	@Property TwitterCallback<RelatedResults> onGotRelatedResults
-	override gotRelatedResults(RelatedResults arg0) {
-		onGotRelatedResults?.callback(arg0)
 	}
 	
 	@Property TwitterCallback<ResponseList<Status>> onGotRetweets

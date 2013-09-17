@@ -20,6 +20,7 @@ class AzyotterApplication extends Application {
 		
 		Accounts.load()
 		Tabs.load()
+		Tabs.save() //初期値を保存
 		
 		Notifications.initialize(getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
 	}

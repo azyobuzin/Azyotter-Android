@@ -41,5 +41,4 @@ abstract class TimelineFragment extends ListFragment {
 	def completedReload(){
 		onCompleteReload?.run()
 	}
-	
 }

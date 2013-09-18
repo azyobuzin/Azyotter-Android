@@ -33,7 +33,6 @@
             </intent-filter>
         </activity>
         <activity android:label="@string/tweet" android:name=".activities.UpdateStatusActivity" android:windowSoftInputMode="stateAlwaysVisible|adjustResize"></activity>
-        <provider android:authorities="net.azyobuzi.azyotter.providers.CachedTweetsProvider" android:exported="false" android:name=".providers.CachedTweetsProvider"></provider>
     </application>
 
 </manifest>

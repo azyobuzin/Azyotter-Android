@@ -37,7 +37,12 @@ class UpdateStatusActivity extends ActionBarActivity {
 		status = findViewById(R.id.status) as EditText
 		status.addTextChangedListener(new StatusTextWatcher(this))
 		
-		status.setText(intent.getStringExtra("text"))
+		if (intent.hasExtra(Intent.EXTRA_STREAM))
+			pictureUri = intent.getParcelableExtra(Intent.EXTRA_STREAM) as Uri
+		if (intent.hasExtra(Intent.EXTRA_SUBJECT))
+			status.append(intent.getStringExtra(Intent.EXTRA_SUBJECT) + " ")
+		if (intent.hasExtra(Intent.EXTRA_TEXT))
+			status.append(intent.getStringExtra(Intent.EXTRA_TEXT))
 	}
 	
 	override onCreateOptionsMenu(Menu menu) {
@@ -51,7 +56,9 @@ class UpdateStatusActivity extends ActionBarActivity {
 	}
 	
 	def changeCounter(){
-		val text = status.text.toString()
+		var text = status.text.toString()
+		if (pictureUri != null)
+			text = text + " http://t.co/xxxxxxxxxx"
 		if (counter != null) counter.title = String.valueOf(
 			Validator.MAX_TWEET_LENGTH - singletonValidator.getTweetLength(text))
 		if (postMenu != null) postMenu.enabled = singletonValidator.isValidTweet(text)
@@ -60,8 +67,8 @@ class UpdateStatusActivity extends ActionBarActivity {
 	override onOptionsItemSelected(MenuItem item) {
 		switch item.itemId{
 			case android.R.id.home:{
-				if (intent.getBooleanExtra("internal", false))
-					startActivity(new Intent(this, MainActivity))
+				if (!intent.getBooleanExtra("internal", false))
+					startActivity(new Intent(this, MainActivity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
 				finish()
 				true
 			}
@@ -86,7 +93,9 @@ class UpdateStatusActivity extends ActionBarActivity {
 							.setContentTitle(getText(R.string.tweet_failed))
 							.setContentText(te.errorMessage)
 							.setContentIntent(PendingIntent.getActivity(this, 0,
-								new Intent(this, class).putExtra("text", statusText),
+								new Intent(this, class)
+									.putExtra(Intent.EXTRA_TEXT, statusText)
+									.putExtra(Intent.EXTRA_STREAM, pictureUri),
 								0
 							))
 							.setAutoCancel(true)
@@ -105,6 +114,7 @@ class UpdateStatusActivity extends ActionBarActivity {
 				} else {
 					pictureUri = null
 					attachPicture.checked = false
+					changeCounter()
 				}
 				true
 			}
@@ -117,6 +127,7 @@ class UpdateStatusActivity extends ActionBarActivity {
 			if (requestCode == PICK_PICTRUE) {
 				pictureUri = data.data
 				attachPicture.checked = true
+				changeCounter()
 			}
 		}
 		

@@ -1,6 +1,5 @@
 package net.azyobuzi.azyotter.timelines
 
-import net.azyobuzi.azyotter.timelines.TweetTimelineFragment
 import net.azyobuzi.azyotter.configuration.Tab
 import net.azyobuzi.azyotter.configuration.Accounts
 import java.util.ArrayList
@@ -8,7 +7,7 @@ import twitter4j.Status
 import net.azyobuzi.azyotter.TwitterClient
 import twitter4j.Paging
 
-class MentionsTimelineFragment extends TweetTimelineFragment {
+class MentionsTimelineFragment extends TimelineFragment {
 	static def createInstance(Tab tab){
 		val instance = new MentionsTimelineFragment()
 		instance.tab = tab

@@ -7,7 +7,7 @@ import net.azyobuzi.azyotter.TwitterClient
 import twitter4j.Paging
 import java.util.ArrayList
 
-class HomeTimelineFragment extends TweetTimelineFragment {
+class HomeTimelineFragment extends TimelineFragment {
 	static def createInstance(Tab tab){
 		val instance = new HomeTimelineFragment()
 		instance.tab = tab

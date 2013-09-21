@@ -18,6 +18,19 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import net.azyobuzi.azyotter.R
 import net.azyobuzi.azyotter.configuration.Tabs
+import android.view.GestureDetector
+import android.widget.ListView
+import android.support.v4.view.GestureDetectorCompat
+import android.view.MotionEvent
+import android.widget.AdapterView
+import net.azyobuzi.azyotter.configuration.ActionType
+import net.azyobuzi.azyotter.configuration.Setting
+import net.azyobuzi.azyotter.activities.AnonymousDialogFragment
+import android.app.AlertDialog
+import java.util.ArrayList
+import net.azyobuzi.azyotter.TwitterClient
+import net.azyobuzi.azyotter.configuration.Accounts
+import android.widget.Toast
 
 abstract class TimelineFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 	protected var Handler handler
@@ -40,7 +53,15 @@ abstract class TimelineFragment extends ListFragment implements LoaderManager.Lo
 			}
 		}
 		
-		adapter = new TweetAdapter(activity)		
+		val gestureListener = new TimelineGestureListener(this)
+		val gestureDetector = new GestureDetectorCompat(activity, gestureListener)
+			=> [onDoubleTapListener = gestureListener]
+		listView.onTouchListener = [v, event |
+			gestureDetector.onTouchEvent(event)
+			false
+		]
+		
+		adapter = new TweetAdapter(activity)
 		setListAdapter(adapter)
 		loaderManager.initLoader(CACHED_TWEETS_LOADER_ID, null, this)
 	}
@@ -66,7 +87,7 @@ abstract class TimelineFragment extends ListFragment implements LoaderManager.Lo
 	protected def completeReload(Iterable<Status> newTweets) {
 		val tweetsList = newTweets.toList()
 		val table = "tab_" + tab.id
-		val db = new CachedTweetsSQLite().createTableIfNotExists(table)
+		val db = CachedTweetsSQLite.instance.createTableIfNotExists(table)
 		try {
 			val cursor = db.query(table, #["_id"],
 				tweetsList.map["_id = ?"].join(" OR "),
@@ -147,6 +168,45 @@ abstract class TimelineFragment extends ListFragment implements LoaderManager.Lo
 		adapter.swapCursor(null)
 	}
 	
+	def doAction(Cursor cursor, ActionType action) {
+		switch action {
+			case ActionType.OPEN_MENU: {
+				val id = cursor.getLong(0)
+				val isRetweet = !cursor.isNull(1)
+				val screenName = cursor.getString(if (isRetweet) 29 else 23)
+				val displayText = cursor.getString(9)
+				val actions = new ArrayList<ActionItem>() => [
+					add(new ActionItem(getText(R.string.add_to_favorite), [|
+						new TwitterClient(Accounts.activeAccount)
+							.createFavorite(id, [
+								//Nothing to do
+							], [te, method |
+								handler.post([|
+									Toast.makeText(activity,
+										getText(R.string.favorite_failed) + ":\n" + te.message,
+										Toast.LENGTH_SHORT
+									).show()
+								])
+							])
+					]))
+				]
+				new AnonymousDialogFragment([f, b |
+					new AlertDialog.Builder(f.activity)
+						.setTitle("@" + screenName + ": " + displayText)
+						.setItems(actions.map[it.name].toArray(#[]), [d, which |
+							actions.get(which).action.run()
+						])
+						.create()
+				], null).show(fragmentManager, "tweetMenu")
+			}
+		}
+	}
+}
+
+@Data
+class ActionItem {
+	CharSequence name
+	Runnable action
 }
 
 class CachedTweetsLoader extends AsyncTaskLoader<Cursor> {
@@ -159,7 +219,7 @@ class CachedTweetsLoader extends AsyncTaskLoader<Cursor> {
 	
 	override loadInBackground() {
 		try {
-			val db = new CachedTweetsSQLite().readableDatabase
+			val db = CachedTweetsSQLite.instance.readableDatabase
 			db.query("tab_" + tabId, null, null, null, null, null, "created_at desc, _id desc")
 				=> [count]
 		} catch (SQLException e) {
@@ -167,4 +227,29 @@ class CachedTweetsLoader extends AsyncTaskLoader<Cursor> {
 			null
 		}
 	}
+}
+
+class TimelineGestureListener extends GestureDetector.SimpleOnGestureListener {
+	new(TimelineFragment fragment) {
+		this.fragment = fragment
+		this.listView = fragment.listView
+	}
+	
+	val TimelineFragment fragment
+	val ListView listView
+	
+	private def getCursorFromEvent(MotionEvent e) {
+		val pos = listView.pointToPosition(e.x as int, e.y as int)
+		if (pos == AdapterView.INVALID_POSITION) null
+		else listView.getItemAtPosition(pos) as Cursor
+	}
+	
+	override onSingleTapConfirmed(MotionEvent e) {
+		val cursor = getCursorFromEvent(e)
+		if (cursor != null) {
+			fragment.doAction(cursor, Setting.singleTapAction)
+			true
+		} else false
+	}
+	
 }

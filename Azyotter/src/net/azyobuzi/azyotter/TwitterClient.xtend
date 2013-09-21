@@ -71,6 +71,15 @@ class TwitterClient {
 		])
 		twitter.updateStatus(statusUpdate)
 	}
+	
+	def createFavorite(long id, TwitterCallback<Status> callback, TwitterExceptionListener onException) {
+		val twitter = twitterInstance
+		twitter.addListener(new AnonymousTwitterListener() => [
+			onCreatedFavorite = callback
+			onExceptionListener = onException
+		])
+		twitter.createFavorite(id)
+	}
 }
 
 interface TwitterCallback<T>{

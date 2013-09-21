@@ -8,8 +8,13 @@ class CachedTweetsSQLite extends SQLiteOpenHelper {
 	static val DATABASE_FILENAME = "tweets.sqlite"
 	static val DATABASE_VERSION = 1
 	
-	new() {
+	private new() {
 		super(AzyotterApplication.instance, DATABASE_FILENAME, null, DATABASE_VERSION)
+	}
+	
+	static var CachedTweetsSQLite instance
+	static def getInstance() {
+		instance = instance ?: new CachedTweetsSQLite()
 	}
 	
 	override onCreate(SQLiteDatabase db) {

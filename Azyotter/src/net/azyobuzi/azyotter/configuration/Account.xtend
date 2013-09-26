@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import twitter4j.auth.AccessToken
 import net.azyobuzi.azyotter.AzyotterApplication
 import android.content.Context
+import net.azyobuzi.azyotter.FavoriteMarker
 
 class Account {
 	new(long id){
@@ -54,5 +55,7 @@ class Account {
 	
 	def clear(){
 		sp.edit().clear().apply()
+		FavoriteMarker.removeAccount(this)
+		FavoriteMarker.save()
 	}
 }

@@ -7,6 +7,8 @@ import com.google.common.base.Strings
 import com.google.common.base.Joiner
 
 class Accounts {
+	private new() { }
+	
 	static ArrayList<Account> list
 	
 	static def load(){

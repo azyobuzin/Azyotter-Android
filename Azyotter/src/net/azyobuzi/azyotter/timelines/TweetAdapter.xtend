@@ -12,6 +12,9 @@ import android.database.Cursor
 import android.view.LayoutInflater
 import java.util.Date
 import java.text.DateFormat
+import android.widget.ImageView
+import net.azyobuzi.azyotter.FavoriteMarker
+import net.azyobuzi.azyotter.configuration.Accounts
 
 class TweetAdapter extends CursorAdapter {
 	new(Activity activity) {
@@ -27,6 +30,9 @@ class TweetAdapter extends CursorAdapter {
 		val isRetweet = !cursor.isNull(1)
 		viewHolder.profileImage.imageBitmap = null
 		viewHolder.profileImage.imageUrl = cursor.getString(if (isRetweet) 31 else 25)
+		viewHolder.favorited.visibility =
+			if (FavoriteMarker.isFavorited(Accounts.activeAccount, cursor.getLong(if (isRetweet) 1 else 0))) View.VISIBLE
+			else View.GONE
 		viewHolder.name.text = cursor.getString(if (isRetweet) 29 else 23)
 			+ " / " + cursor.getString(if (isRetweet) 30 else 24)
 		viewHolder.text.text = cursor.getString(9)
@@ -45,6 +51,7 @@ class TweetAdapter extends CursorAdapter {
 		val view = inflater.inflate(R.layout.tweet, parent, false)
 		view.setTag(new TweetViewHolder(
 			view.findViewById(R.id.profile_image) as UrlImageView,
+			view.findViewById(R.id.favorited) as ImageView,
 			view.findViewById(R.id.name) as TextView,
 			view.findViewById(R.id.text) as TextView,
 			view.findViewById(R.id.date_source) as TextView,
@@ -58,6 +65,7 @@ class TweetAdapter extends CursorAdapter {
 @Data
 class TweetViewHolder{
 	UrlImageView profileImage
+	ImageView favorited
 	TextView name
 	TextView text
 	TextView dateAndSource

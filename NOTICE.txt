@@ -32,7 +32,8 @@ Copyright (c) 2005-2008, The Android Open Source Project
 twitter-text-java - A Java implementation of Twitter's text processing library
 Copyright 2011 Twitter, Inc.
 
-MessagePack ™ Copyright © 2008-2013 Sadayuki Furuhashi
+MessagePack for Java
+Copyright (C) 2009 - 2013 FURUHASHI Sadayuki
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

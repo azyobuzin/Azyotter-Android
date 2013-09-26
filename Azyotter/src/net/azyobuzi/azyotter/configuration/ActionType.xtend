@@ -2,5 +2,6 @@ package net.azyobuzi.azyotter.configuration
 
 enum ActionType {
 	NONE,
-	OPEN_MENU
+	OPEN_MENU,
+	FAVORITE
 }

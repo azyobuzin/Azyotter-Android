@@ -80,6 +80,15 @@ class TwitterClient {
 		])
 		twitter.createFavorite(id)
 	}
+	
+	def destroyFavorite(long id, TwitterCallback<Status> callback, TwitterExceptionListener onException) {
+		val twitter = twitterInstance
+		twitter.addListener(new AnonymousTwitterListener() => [
+			onDestroyedFavorite = callback
+			onExceptionListener = onException
+		])
+		twitter.destroyFavorite(id)
+	}
 }
 
 interface TwitterCallback<T>{

@@ -5,6 +5,8 @@ import com.google.common.collect.Iterables
 import java.util.regex.Pattern
 
 class TweetParser {
+	private new() { }
+	
 	static def createDisplayText(Status status) {
 		val entities = (if (status.retweet)
 			Iterables.concat(status.retweetedStatus.URLEntities, status.retweetedStatus.mediaEntities)

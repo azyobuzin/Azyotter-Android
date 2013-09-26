@@ -7,6 +7,8 @@ import com.google.common.base.Strings
 import com.google.common.base.Joiner
 
 class Tabs {
+	private new() { }
+	
 	static ArrayList<Tab> list
 	
 	static def load(){

@@ -31,6 +31,7 @@ import java.util.ArrayList
 import net.azyobuzi.azyotter.TwitterClient
 import net.azyobuzi.azyotter.configuration.Accounts
 import android.widget.Toast
+import net.azyobuzi.azyotter.FavoriteMarker
 
 abstract class TimelineFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 	protected var Handler handler
@@ -168,27 +169,21 @@ abstract class TimelineFragment extends ListFragment implements LoaderManager.Lo
 		adapter.swapCursor(null)
 	}
 	
-	def doAction(Cursor cursor, ActionType action) {
+	def void doAction(Cursor cursor, ActionType action) {
+		val id = cursor.getLong(0)
+		val isRetweet = !cursor.isNull(1)
+		val baseId = if (isRetweet) cursor.getLong(1) else id
+		val account = Accounts.activeAccount
+		
 		switch action {
 			case ActionType.OPEN_MENU: {
-				val id = cursor.getLong(0)
-				val isRetweet = !cursor.isNull(1)
 				val screenName = cursor.getString(if (isRetweet) 29 else 23)
 				val displayText = cursor.getString(9)
 				val actions = new ArrayList<ActionItem>() => [
-					add(new ActionItem(getText(R.string.add_to_favorite), [|
-						new TwitterClient(Accounts.activeAccount)
-							.createFavorite(id, [
-								//Nothing to do
-							], [te, method |
-								handler.post([|
-									Toast.makeText(activity,
-										getText(R.string.favorite_failed) + ":\n" + te.message,
-										Toast.LENGTH_SHORT
-									).show()
-								])
-							])
-					]))
+					add(new ActionItem(getText(
+						if (FavoriteMarker.isFavorited(Accounts.activeAccount, baseId)) R.string.remove_from_favorite
+						else R.string.add_to_favorite
+					), [| doAction(cursor, ActionType.FAVORITE)]))
 				]
 				new AnonymousDialogFragment([f, b |
 					new AlertDialog.Builder(f.activity)
@@ -198,6 +193,34 @@ abstract class TimelineFragment extends ListFragment implements LoaderManager.Lo
 						])
 						.create()
 				], null).show(fragmentManager, "tweetMenu")
+			}
+			case ActionType.FAVORITE: {
+				val client = new TwitterClient(account)
+				if (FavoriteMarker.isFavorited(Accounts.activeAccount, baseId))
+					client.destroyFavorite(baseId, [
+						FavoriteMarker.unmark(account, baseId)
+						FavoriteMarker.save()
+						handler.post([| adapter.notifyDataSetChanged()])
+					], [te, method |
+						handler.post([|
+							Toast.makeText(activity,
+								getText(R.string.unfavorite_failed) + ":\n" + te.message,
+								Toast.LENGTH_SHORT
+							).show()
+						])
+					])
+				else client.createFavorite(baseId, [
+						FavoriteMarker.mark(account, baseId)
+						FavoriteMarker.save()
+						handler.post([| adapter.notifyDataSetChanged()])
+					], [te, method |
+						handler.post([|
+							Toast.makeText(activity,
+								getText(R.string.favorite_failed) + ":\n" + te.message,
+								Toast.LENGTH_SHORT
+							).show()
+						])
+					])
 			}
 		}
 	}

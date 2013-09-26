@@ -23,6 +23,7 @@ class AzyotterApplication extends Application {
 		Accounts.load()
 		Tabs.load()
 		Tabs.save() //初期値を保存
+		FavoriteMarker.load()
 		
 		Notifications.initialize(getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
 		Setting.initialize(PreferenceManager.getDefaultSharedPreferences(this))

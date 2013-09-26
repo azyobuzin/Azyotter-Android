@@ -3,6 +3,8 @@ package net.azyobuzi.azyotter.configuration
 import android.content.SharedPreferences
 
 class Setting {
+	private new() { }
+	
 	static var SharedPreferences sp
 	static def initialize(SharedPreferences sharedPreferences) {
 		sp = sharedPreferences

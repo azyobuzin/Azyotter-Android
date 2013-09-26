@@ -20,5 +20,8 @@
     <string name="attach_picture">画像を添付</string>
     <string name="add_to_favorite">お気に入りに追加</string>
     <string name="favorite_failed">お気に入り追加失敗</string>
+    <string name="favorited">お気に入り</string>
+    <string name="remove_from_favorite">お気に入りから削除</string>
+    <string name="unfavorite_failed">お気に入り削除失敗</string>
 
 </resources>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
@@ -10,35 +10,48 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginRight="5dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
         android:contentDescription="@string/profile_image" />
 
-    <LinearLayout
-        android:layout_width="fill_parent"
+    <ImageView
+        android:id="@+id/favorited"
+        android:layout_width="48dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_alignLeft="@+id/profile_image"
+        android:layout_below="@+id/profile_image"
+        android:layout_marginTop="5dp"
+        android:src="@drawable/favorite_on"
+        android:contentDescription="@string/favorited" />
 
-        <TextView
-            android:id="@+id/name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-    		android:textStyle="bold" />
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/profile_image"
+        android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/name"
+        android:layout_below="@+id/name" />
 
-        <TextView
-            android:id="@+id/date_source"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-                    
-        <TextView
-            android:id="@+id/retweeted_by"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/retweet_on" />
+    <TextView
+        android:id="@+id/date_source"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/text"
+        android:layout_below="@+id/text" />
 
-    </LinearLayout>
+    <TextView
+        android:id="@+id/retweeted_by"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/date_source"
+        android:layout_below="@+id/date_source"
+        android:drawableLeft="@drawable/retweet_on" />
 
-</LinearLayout>
+</RelativeLayout>

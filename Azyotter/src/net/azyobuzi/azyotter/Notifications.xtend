@@ -3,7 +3,9 @@ package net.azyobuzi.azyotter
 import android.app.NotificationManager
 import android.app.Notification
 
-class Notifications {	
+class Notifications {
+	private new() { }
+	
 	static var NotificationManager m_manager
 	
 	static def initialize(NotificationManager manager){

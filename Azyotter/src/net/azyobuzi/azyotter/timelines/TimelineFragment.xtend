@@ -275,4 +275,12 @@ class TimelineGestureListener extends GestureDetector.SimpleOnGestureListener {
 		} else false
 	}
 	
+	override onDoubleTap(MotionEvent e) {
+		val cursor = getCursorFromEvent(e)
+		if (cursor != null) {
+			fragment.doAction(cursor, Setting.doubleTapAction)
+			true
+		} else false
+	}
+	
 }

@@ -186,6 +186,7 @@ abstract class TimelineFragment extends ListFragment implements LoaderManager.Lo
 						if (FavoriteMarker.isFavorited(Accounts.activeAccount, baseId)) R.string.remove_from_favorite
 						else R.string.add_to_favorite
 					), [| doAction(tweet, ActionType.FAVORITE)]))
+					add(new ActionItem(getText(R.string.retweet), [| doAction(tweet, ActionType.RETWEET)]))
 				]
 				new AnonymousDialogFragment([f, b |
 					new AlertDialog.Builder(f.activity)
@@ -231,6 +232,16 @@ abstract class TimelineFragment extends ListFragment implements LoaderManager.Lo
 							).show()
 						])
 					])
+			}
+			case ActionType.RETWEET: {
+				new TwitterClient(account).retweetStatus(baseId, [], [te, method |
+					handler.post([|
+						Toast.makeText(activity,
+							getText(R.string.retweet_failed) + ":\n" + te.message,
+							Toast.LENGTH_SHORT
+						).show()
+					])
+				])
 			}
 		}
 	}

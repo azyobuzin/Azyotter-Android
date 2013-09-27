@@ -89,6 +89,15 @@ class TwitterClient {
 		])
 		twitter.destroyFavorite(id)
 	}
+	
+	def retweetStatus(long id, TwitterCallback<Status> callback, TwitterExceptionListener onException) {
+		val twitter = twitterInstance
+		twitter.addListener(new AnonymousTwitterListener() => [
+			onRetweetedStatus = callback
+			onExceptionListener = onException
+		])
+		twitter.retweetStatus(id)
+	}
 }
 
 interface TwitterCallback<T>{

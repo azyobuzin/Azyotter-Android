@@ -4,5 +4,6 @@ enum ActionType {
 	NONE,
 	OPEN_MENU,
 	REPLY,
-	FAVORITE
+	FAVORITE,
+	RETWEET
 }

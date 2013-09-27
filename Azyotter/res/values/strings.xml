@@ -24,5 +24,7 @@
     <string name="remove_from_favorite">お気に入りから削除</string>
     <string name="unfavorite_failed">お気に入り削除失敗</string>
     <string name="reply">返信</string>
+    <string name="retweet">リツイート</string>
+    <string name="retweet_failed">リツイート失敗</string>
 
 </resources>

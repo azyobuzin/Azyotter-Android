@@ -28,6 +28,7 @@ class UpdateStatusActivity extends ActionBarActivity {
 	var MenuItem attachPicture
 	
 	Uri pictureUri
+	long inReplyToStatusId
 	
 	override onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState)
@@ -43,6 +44,13 @@ class UpdateStatusActivity extends ActionBarActivity {
 			status.append(intent.getStringExtra(Intent.EXTRA_SUBJECT) + " ")
 		if (intent.hasExtra(Intent.EXTRA_TEXT))
 			status.append(intent.getStringExtra(Intent.EXTRA_TEXT))
+		inReplyToStatusId = intent.getLongExtra("in_reply_to_status_id", -1)
+		if (inReplyToStatusId > -1) {
+			supportActionBar.title = R.string.reply
+			val inReplyToScreenName = intent.getStringExtra("in_reply_to_screen_name")
+			if (inReplyToScreenName != null)
+				supportActionBar.subtitle = "@" + inReplyToScreenName
+		}
 	}
 	
 	override onCreateOptionsMenu(Menu menu) {
@@ -82,6 +90,9 @@ class UpdateStatusActivity extends ActionBarActivity {
 					} catch (Exception e) {
 						e.printStackTrace()
 					}
+				}
+				if (inReplyToStatusId > -1) {
+					statusUpdate.setInReplyToStatusId(inReplyToStatusId)
 				}
 				
 				new TwitterClient(Accounts.activeAccount).updateStatus(statusUpdate, [

@@ -33,6 +33,8 @@ import net.azyobuzi.azyotter.configuration.Accounts
 import android.widget.Toast
 import net.azyobuzi.azyotter.FavoriteMarker
 import net.azyobuzi.azyotter.database.TwitterStatus
+import android.content.Intent
+import net.azyobuzi.azyotter.activities.UpdateStatusActivity
 
 abstract class TimelineFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 	protected var Handler handler
@@ -173,12 +175,13 @@ abstract class TimelineFragment extends ListFragment implements LoaderManager.Lo
 	def void doAction(TwitterStatus tweet, ActionType action) {
 		val isRetweet = tweet.retweetedId != null
 		val baseId = if (isRetweet) tweet.retweetedId else tweet.id
+		val baseScreenName = if (isRetweet) tweet.retweetedUserScreenName else tweet.userScreenName
 		val account = Accounts.activeAccount
 		
 		switch action {
 			case ActionType.OPEN_MENU: {
-				val screenName = if (isRetweet) tweet.retweetedUserScreenName else tweet.userScreenName
 				val actions = new ArrayList<ActionItem>() => [
+					add(new ActionItem(getText(R.string.reply), [| doAction(tweet, ActionType.REPLY)]))
 					add(new ActionItem(getText(
 						if (FavoriteMarker.isFavorited(Accounts.activeAccount, baseId)) R.string.remove_from_favorite
 						else R.string.add_to_favorite
@@ -186,12 +189,20 @@ abstract class TimelineFragment extends ListFragment implements LoaderManager.Lo
 				]
 				new AnonymousDialogFragment([f, b |
 					new AlertDialog.Builder(f.activity)
-						.setTitle("@" + screenName + ": " + tweet.displayText)
+						.setTitle("@" + baseScreenName + ": " + tweet.displayText)
 						.setItems(actions.map[it.name].toArray(#[]), [d, which |
 							actions.get(which).action.run()
 						])
 						.create()
 				], null).show(fragmentManager, "tweetMenu")
+			}
+			case ActionType.REPLY: {
+				startActivity(new Intent(activity, UpdateStatusActivity)
+					.putExtra("internal", true)
+					.putExtra("in_reply_to_status_id", baseId)
+					.putExtra("in_reply_to_screen_name", baseScreenName)
+					.putExtra(Intent.EXTRA_TEXT, "@" + baseScreenName + " ")
+				)
 			}
 			case ActionType.FAVORITE: {
 				val client = new TwitterClient(account)

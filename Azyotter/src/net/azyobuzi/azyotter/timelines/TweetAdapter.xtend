@@ -10,11 +10,11 @@ import android.support.v4.widget.CursorAdapter
 import android.content.Context
 import android.database.Cursor
 import android.view.LayoutInflater
-import java.util.Date
 import java.text.DateFormat
 import android.widget.ImageView
 import net.azyobuzi.azyotter.FavoriteMarker
 import net.azyobuzi.azyotter.configuration.Accounts
+import net.azyobuzi.azyotter.database.TwitterStatus
 
 class TweetAdapter extends CursorAdapter {
 	new(Activity activity) {
@@ -26,22 +26,22 @@ class TweetAdapter extends CursorAdapter {
 	static val dateFormatter = DateFormat.instance
 	
 	override bindView(View view, Context context, Cursor cursor) {
+		val tweet = TwitterStatus.fromCursor(cursor)
 		val viewHolder = view.tag as TweetViewHolder
-		val isRetweet = !cursor.isNull(1)
+		val isRetweet = tweet.retweetedId != null
 		viewHolder.profileImage.imageBitmap = null
-		viewHolder.profileImage.imageUrl = cursor.getString(if (isRetweet) 31 else 25)
+		viewHolder.profileImage.imageUrl = if (isRetweet) tweet.retweetedUserProfileImage else tweet.userProfileImage
 		viewHolder.favorited.visibility =
-			if (FavoriteMarker.isFavorited(Accounts.activeAccount, cursor.getLong(if (isRetweet) 1 else 0))) View.VISIBLE
+			if (FavoriteMarker.isFavorited(Accounts.activeAccount, if (isRetweet) tweet.retweetedId else tweet.id)) View.VISIBLE
 			else View.GONE
-		viewHolder.name.text = cursor.getString(if (isRetweet) 29 else 23)
-			+ " / " + cursor.getString(if (isRetweet) 30 else 24)
-		viewHolder.text.text = cursor.getString(9)
-		val createdAt = new Date(cursor.getLong(if (isRetweet) 6 else 5))
-		viewHolder.dateAndSource.text = dateFormatter.format(createdAt)
-			+ " / via " + cursor.getString(if (isRetweet) 12 else 10)
+		viewHolder.name.text = (if (isRetweet) tweet.retweetedUserScreenName else tweet.userScreenName)
+			+ " / " + if (isRetweet) tweet.retweetedUserName else tweet.userName
+		viewHolder.text.text = tweet.displayText
+		viewHolder.dateAndSource.text = dateFormatter.format(if (isRetweet) tweet.retweetedCreatedAt else tweet.createdAt)
+			+ " / via " + if (isRetweet) tweet.retweetedSourceName else tweet.sourceName
 		if (isRetweet) {
 			viewHolder.retweetedBy.visibility = View.VISIBLE
-			viewHolder.retweetedBy.text = "RT by " + cursor.getString(23)
+			viewHolder.retweetedBy.text = "RT by " + tweet.userScreenName
 		} else {
 			viewHolder.retweetedBy.visibility = View.GONE
 		}

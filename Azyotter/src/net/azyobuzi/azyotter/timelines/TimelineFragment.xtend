@@ -32,6 +32,7 @@ import net.azyobuzi.azyotter.TwitterClient
 import net.azyobuzi.azyotter.configuration.Accounts
 import android.widget.Toast
 import net.azyobuzi.azyotter.FavoriteMarker
+import net.azyobuzi.azyotter.database.TwitterStatus
 
 abstract class TimelineFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 	protected var Handler handler
@@ -169,25 +170,23 @@ abstract class TimelineFragment extends ListFragment implements LoaderManager.Lo
 		adapter.swapCursor(null)
 	}
 	
-	def void doAction(Cursor cursor, ActionType action) {
-		val id = cursor.getLong(0)
-		val isRetweet = !cursor.isNull(1)
-		val baseId = if (isRetweet) cursor.getLong(1) else id
+	def void doAction(TwitterStatus tweet, ActionType action) {
+		val isRetweet = tweet.retweetedId != null
+		val baseId = if (isRetweet) tweet.retweetedId else tweet.id
 		val account = Accounts.activeAccount
 		
 		switch action {
 			case ActionType.OPEN_MENU: {
-				val screenName = cursor.getString(if (isRetweet) 29 else 23)
-				val displayText = cursor.getString(9)
+				val screenName = if (isRetweet) tweet.retweetedUserScreenName else tweet.userScreenName
 				val actions = new ArrayList<ActionItem>() => [
 					add(new ActionItem(getText(
 						if (FavoriteMarker.isFavorited(Accounts.activeAccount, baseId)) R.string.remove_from_favorite
 						else R.string.add_to_favorite
-					), [| doAction(cursor, ActionType.FAVORITE)]))
+					), [| doAction(tweet, ActionType.FAVORITE)]))
 				]
 				new AnonymousDialogFragment([f, b |
 					new AlertDialog.Builder(f.activity)
-						.setTitle("@" + screenName + ": " + displayText)
+						.setTitle("@" + screenName + ": " + tweet.displayText)
 						.setItems(actions.map[it.name].toArray(#[]), [d, which |
 							actions.get(which).action.run()
 						])
@@ -261,24 +260,24 @@ class TimelineGestureListener extends GestureDetector.SimpleOnGestureListener {
 	val TimelineFragment fragment
 	val ListView listView
 	
-	private def getCursorFromEvent(MotionEvent e) {
+	private def getTweetFromEvent(MotionEvent e) {
 		val pos = listView.pointToPosition(e.x as int, e.y as int)
 		if (pos == AdapterView.INVALID_POSITION) null
-		else listView.getItemAtPosition(pos) as Cursor
+		else TwitterStatus.fromCursor(listView.getItemAtPosition(pos) as Cursor)
 	}
 	
 	override onSingleTapConfirmed(MotionEvent e) {
-		val cursor = getCursorFromEvent(e)
-		if (cursor != null) {
-			fragment.doAction(cursor, Setting.singleTapAction)
+		val tweet = getTweetFromEvent(e)
+		if (tweet != null) {
+			fragment.doAction(tweet, Setting.singleTapAction)
 			true
 		} else false
 	}
 	
 	override onDoubleTap(MotionEvent e) {
-		val cursor = getCursorFromEvent(e)
-		if (cursor != null) {
-			fragment.doAction(cursor, Setting.doubleTapAction)
+		val tweet = getTweetFromEvent(e)
+		if (tweet != null) {
+			fragment.doAction(tweet, Setting.doubleTapAction)
 			true
 		} else false
 	}

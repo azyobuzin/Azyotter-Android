@@ -35,6 +35,7 @@ import net.azyobuzi.azyotter.FavoriteMarker
 import net.azyobuzi.azyotter.database.TweetItem
 import android.content.Intent
 import net.azyobuzi.azyotter.activities.UpdateStatusActivity
+import static net.azyobuzi.azyotter.database.TweetItem.*
 
 abstract class TimelineFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 	protected var Handler handler
@@ -105,48 +106,48 @@ abstract class TimelineFragment extends ListFragment implements LoaderManager.Lo
 			
 			tweetsList.forEach[tweet |
 				db.replace(table, null, new ContentValues() => [
-					put("_id", tweet.id)
-					if (tweet.retweet) put("retweeted_id", tweet.retweetedStatus.id)
-					put("in_reply_to_user_id", if (tweet.retweet) tweet.retweetedStatus.inReplyToUserId else tweet.inReplyToUserId)
-					put("in_reply_to_screen_name", if (tweet.retweet) tweet.retweetedStatus.inReplyToScreenName else tweet.inReplyToScreenName)
-					put("in_reply_to_status_id", if (tweet.retweet) tweet.retweetedStatus.inReplyToStatusId else tweet.inReplyToStatusId)
-					put("created_at", tweet.createdAt.time)
-					if (tweet.retweet) put("retweeted_created_at", tweet.retweetedStatus.createdAt.time)
-					put("text", tweet.text)
-					if (tweet.retweet) put("retweeted_text", tweet.retweetedStatus.text)
-					put("display_text", TweetParser.createDisplayText(tweet))
-					put("source_name", TweetParser.getSourceName(tweet))
-					put("source_uri", TweetParser.getSourceUri(tweet))
+					put(ID, tweet.id)
+					if (tweet.retweet) put(RETWEETED_ID, tweet.retweetedStatus.id)
+					put(IN_REPLY_TO_USER_ID, if (tweet.retweet) tweet.retweetedStatus.inReplyToUserId else tweet.inReplyToUserId)
+					put(IN_REPLY_TO_SCREEN_NAME, if (tweet.retweet) tweet.retweetedStatus.inReplyToScreenName else tweet.inReplyToScreenName)
+					put(IN_REPLY_TO_STATUS_ID, if (tweet.retweet) tweet.retweetedStatus.inReplyToStatusId else tweet.inReplyToStatusId)
+					put(CREATED_AT, tweet.createdAt.time)
+					if (tweet.retweet) put(RETWEETED_CREATED_AT, tweet.retweetedStatus.createdAt.time)
+					put(TEXT, tweet.text)
+					if (tweet.retweet) put(RETWEETED_TEXT, tweet.retweetedStatus.text)
+					put(DISPLAY_TEXT, TweetParser.createDisplayText(tweet))
+					put(SOURCE_NAME, TweetParser.getSourceName(tweet))
+					put(SOURCE_URI, TweetParser.getSourceUri(tweet))
 					if (tweet.retweet) {
-						put("retweeted_source_name", TweetParser.getSourceName(tweet.retweetedStatus))
-						put("retweeted_source_uri", TweetParser.getSourceUri(tweet.retweetedStatus))
+						put(RETWEETED_SOURCE_NAME, TweetParser.getSourceName(tweet.retweetedStatus))
+						put(RETWEETED_SOURCE_URI, TweetParser.getSourceUri(tweet.retweetedStatus))
 					}
-					put("favorite_count", if (tweet.retweet) tweet.retweetedStatus.favoriteCount else tweet.favoriteCount)
-					put("retweet_count", if(tweet.retweet) tweet.retweetedStatus.retweetCount else tweet.retweetCount)
+					put(FAVORITE_COUNT, if (tweet.retweet) tweet.retweetedStatus.favoriteCount else tweet.favoriteCount)
+					put(RETWEET_COUNT, if(tweet.retweet) tweet.retweetedStatus.retweetCount else tweet.retweetCount)
 					val geo = if (tweet.retweet) tweet.retweetedStatus.geoLocation else tweet.geoLocation
 					if (geo != null) {
-						put("latitude", geo.latitude)
-						put("longitude", geo.longitude)
+						put(LATITUDE, geo.latitude)
+						put(LONGITUDE, geo.longitude)
 					}
 					val place = if (tweet.retweet) tweet.retweetedStatus.place else tweet.place
 					if (place != null) {
-						put("place_id", place.id)
-						put("place_name", place.name)
-						put("place_full_name", place.fullName)
-						put("place_country", place.country)
+						put(PLACE_ID, place.id)
+						put(PLACE_NAME, place.name)
+						put(PLACE_FULL_NAME, place.fullName)
+						put(PLACE_COUNTRY, place.country)
 					}
-					put("user_id", tweet.user.id)
-					put("user_screen_name", tweet.user.screenName)
-					put("user_name", tweet.user.name)
-					put("user_profile_image", tweet.user.profileImageUrlHttps.toString())
-					put("user_protected", tweet.user.protected)
-					put("user_verified", tweet.user.verified)
+					put(USER_ID, tweet.user.id)
+					put(USER_SCREEN_NAME, tweet.user.screenName)
+					put(USER_NAME, tweet.user.name)
+					put(USER_PROFILE_IMAGE, tweet.user.profileImageUrlHttps.toString())
+					put(USER_PROTECTED, tweet.user.protected)
+					put(USER_VERIFIED, tweet.user.verified)
 					if (tweet.retweet) {
-						put("retweeted_user_id", tweet.retweetedStatus.user.id)
-						put("retweeted_user_screen_name", tweet.retweetedStatus.user.screenName)
-						put("retweeted_user_name", tweet.retweetedStatus.user.name)
-						put("retweeted_user_profile_image", tweet.retweetedStatus.user.profileImageUrlHttps.toString())
-						put("retweeted_user_verified", tweet.retweetedStatus.user.verified)
+						put(RETWEETED_USER_ID, tweet.retweetedStatus.user.id)
+						put(RETWEETED_USER_SCREEN_NAME, tweet.retweetedStatus.user.screenName)
+						put(RETWEETED_USER_NAME, tweet.retweetedStatus.user.name)
+						put(RETWEETED_USER_PROFILE_IMAGE, tweet.retweetedStatus.user.profileImageUrlHttps.toString())
+						put(RETWEETED_USER_VERIFIED, tweet.retweetedStatus.user.verified)
 					}
 				])
 			]

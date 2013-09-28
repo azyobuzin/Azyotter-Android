@@ -3,6 +3,7 @@ package net.azyobuzi.azyotter.database
 import android.database.sqlite.SQLiteOpenHelper
 import android.database.sqlite.SQLiteDatabase
 import net.azyobuzi.azyotter.AzyotterApplication
+import static net.azyobuzi.azyotter.database.TweetItem.*
 
 class CachedTweetsSQLite extends SQLiteOpenHelper {
 	static val DATABASE_FILENAME = "tweets.sqlite"
@@ -30,39 +31,39 @@ class CachedTweetsSQLite extends SQLiteOpenHelper {
 		db.beginTransaction()
 		db.execSQL("CREATE TABLE IF NOT EXISTS " + table + "("
 			+ #[
-				"_id integer primary key",
-				"retweeted_id",
-				"in_reply_to_user_id",
-				"in_reply_to_screen_name",
-				"in_reply_to_status_id",
-				"created_at",
-				"retweeted_created_at",
-				"text",
-				"retweeted_text",
-				"display_text",
-				"source_name",
-				"source_uri",
-				"retweeted_source_name",
-				"retweeted_source_uri",
-				"favorite_count",
-				"retweet_count",
-				"latitude",
-				"longitude",
-				"place_id",
-				"place_name",
-				"place_full_name",
-				"place_country",
-				"user_id",
-				"user_screen_name",
-				"user_name",
-				"user_profile_image",
-				"user_protected",
-				"user_verified",
-				"retweeted_user_id",
-				"retweeted_user_screen_name",
-				"retweeted_user_name",
-				"retweeted_user_profile_image",
-				"retweeted_user_verified"
+				ID + " integer primary key",
+				RETWEETED_ID,
+				IN_REPLY_TO_USER_ID,
+				IN_REPLY_TO_SCREEN_NAME,
+				IN_REPLY_TO_STATUS_ID,
+				CREATED_AT,
+				RETWEETED_CREATED_AT,
+				TEXT,
+				RETWEETED_TEXT,
+				DISPLAY_TEXT,
+				SOURCE_NAME,
+				SOURCE_URI,
+				RETWEETED_SOURCE_NAME,
+				RETWEETED_SOURCE_URI,
+				FAVORITE_COUNT,
+				RETWEET_COUNT,
+				LATITUDE,
+				LONGITUDE,
+				PLACE_ID,
+				PLACE_NAME,
+				PLACE_FULL_NAME,
+				PLACE_COUNTRY,
+				USER_ID,
+				USER_SCREEN_NAME,
+				USER_NAME,
+				USER_PROFILE_IMAGE,
+				USER_PROTECTED,
+				USER_VERIFIED,
+				RETWEETED_USER_ID,
+				RETWEETED_USER_SCREEN_NAME,
+				RETWEETED_USER_NAME,
+				RETWEETED_USER_PROFILE_IMAGE,
+				RETWEETED_USER_VERIFIED
 			].join(", ")
 			+ ")"
 		)

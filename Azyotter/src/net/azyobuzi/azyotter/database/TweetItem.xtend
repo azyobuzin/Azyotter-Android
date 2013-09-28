@@ -2,6 +2,7 @@ package net.azyobuzi.azyotter.database
 
 import java.util.Date
 import android.database.Cursor
+import org.msgpack.MessagePack
 
 @Data
 class TweetItem {
@@ -27,6 +28,7 @@ class TweetItem {
 	String placeName
 	String placeFullName
 	String placeCountry
+	TweetEntities entities
 	
 	//User
 	long userId
@@ -66,6 +68,7 @@ class TweetItem {
 	public static val PLACE_NAME = "place_name"
 	public static val PLACE_FULL_NAME = "place_full_name"
 	public static val PLACE_COUNTRY = "place_country"
+	public static val ENTITIES = "entities"
 	public static val USER_ID = "user_id"
 	public static val USER_SCREEN_NAME = "user_screen_name"
 	public static val USER_NAME = "user_name"
@@ -106,6 +109,7 @@ class TweetItem {
 			cursor.getString(cursor.getColumnIndex(PLACE_NAME)),
 			cursor.getString(cursor.getColumnIndex(PLACE_FULL_NAME)),
 			cursor.getString(cursor.getColumnIndex(PLACE_COUNTRY)),
+			new MessagePack().read(cursor.getBlob(cursor.getColumnIndex(ENTITIES)), TweetEntities),
 			cursor.getLong(cursor.getColumnIndex(USER_ID)),
 			cursor.getString(cursor.getColumnIndex(USER_SCREEN_NAME)),
 			cursor.getString(cursor.getColumnIndex(USER_NAME)),

@@ -36,6 +36,9 @@ import net.azyobuzi.azyotter.database.TweetItem
 import android.content.Intent
 import net.azyobuzi.azyotter.activities.UpdateStatusActivity
 import static net.azyobuzi.azyotter.database.TweetItem.*
+import org.msgpack.MessagePack
+import net.azyobuzi.azyotter.database.TweetEntities
+import android.net.Uri
 
 abstract class TimelineFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 	protected var Handler handler
@@ -104,13 +107,15 @@ abstract class TimelineFragment extends ListFragment implements LoaderManager.Lo
 				db.delete(table, null, null)
 			} else cursor.close()
 			
+			val msgpack = new MessagePack()
 			tweetsList.forEach[tweet |
+				val baseTweet = if (tweet.retweet) tweet.retweetedStatus else tweet
 				db.replace(table, null, new ContentValues() => [
 					put(ID, tweet.id)
 					if (tweet.retweet) put(RETWEETED_ID, tweet.retweetedStatus.id)
-					put(IN_REPLY_TO_USER_ID, if (tweet.retweet) tweet.retweetedStatus.inReplyToUserId else tweet.inReplyToUserId)
-					put(IN_REPLY_TO_SCREEN_NAME, if (tweet.retweet) tweet.retweetedStatus.inReplyToScreenName else tweet.inReplyToScreenName)
-					put(IN_REPLY_TO_STATUS_ID, if (tweet.retweet) tweet.retweetedStatus.inReplyToStatusId else tweet.inReplyToStatusId)
+					put(IN_REPLY_TO_USER_ID, baseTweet.inReplyToUserId)
+					put(IN_REPLY_TO_SCREEN_NAME, baseTweet.inReplyToScreenName)
+					put(IN_REPLY_TO_STATUS_ID, baseTweet.inReplyToStatusId)
 					put(CREATED_AT, tweet.createdAt.time)
 					if (tweet.retweet) put(RETWEETED_CREATED_AT, tweet.retweetedStatus.createdAt.time)
 					put(TEXT, tweet.text)
@@ -122,20 +127,21 @@ abstract class TimelineFragment extends ListFragment implements LoaderManager.Lo
 						put(RETWEETED_SOURCE_NAME, TweetParser.getSourceName(tweet.retweetedStatus))
 						put(RETWEETED_SOURCE_URI, TweetParser.getSourceUri(tweet.retweetedStatus))
 					}
-					put(FAVORITE_COUNT, if (tweet.retweet) tweet.retweetedStatus.favoriteCount else tweet.favoriteCount)
-					put(RETWEET_COUNT, if(tweet.retweet) tweet.retweetedStatus.retweetCount else tweet.retweetCount)
-					val geo = if (tweet.retweet) tweet.retweetedStatus.geoLocation else tweet.geoLocation
+					put(FAVORITE_COUNT, baseTweet.favoriteCount)
+					put(RETWEET_COUNT, baseTweet.retweetCount)
+					val geo = baseTweet.geoLocation
 					if (geo != null) {
 						put(LATITUDE, geo.latitude)
 						put(LONGITUDE, geo.longitude)
 					}
-					val place = if (tweet.retweet) tweet.retweetedStatus.place else tweet.place
+					val place = baseTweet.place
 					if (place != null) {
 						put(PLACE_ID, place.id)
 						put(PLACE_NAME, place.name)
 						put(PLACE_FULL_NAME, place.fullName)
 						put(PLACE_COUNTRY, place.country)
 					}
+					put(ENTITIES, msgpack.write(new TweetEntities(baseTweet)))
 					put(USER_ID, tweet.user.id)
 					put(USER_SCREEN_NAME, tweet.user.screenName)
 					put(USER_NAME, tweet.user.name)
@@ -188,6 +194,9 @@ abstract class TimelineFragment extends ListFragment implements LoaderManager.Lo
 						else R.string.add_to_favorite
 					), [| doAction(tweet, ActionType.FAVORITE)]))
 					add(new ActionItem(getText(R.string.retweet), [| doAction(tweet, ActionType.RETWEET)]))
+					addAll(tweet.entities.urls.map[new ActionItem(it.expandedUrl, [|
+						startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(it.url)))
+					])])
 				]
 				new AnonymousDialogFragment([f, b |
 					new AlertDialog.Builder(f.activity)

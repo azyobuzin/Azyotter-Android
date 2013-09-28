@@ -53,6 +53,7 @@ class CachedTweetsSQLite extends SQLiteOpenHelper {
 				PLACE_NAME,
 				PLACE_FULL_NAME,
 				PLACE_COUNTRY,
+				ENTITIES,
 				USER_ID,
 				USER_SCREEN_NAME,
 				USER_NAME,

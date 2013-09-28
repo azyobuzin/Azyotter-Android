@@ -14,7 +14,7 @@ import java.text.DateFormat
 import android.widget.ImageView
 import net.azyobuzi.azyotter.FavoriteMarker
 import net.azyobuzi.azyotter.configuration.Accounts
-import net.azyobuzi.azyotter.database.TwitterStatus
+import net.azyobuzi.azyotter.database.TweetItem
 
 class TweetAdapter extends CursorAdapter {
 	new(Activity activity) {
@@ -26,7 +26,7 @@ class TweetAdapter extends CursorAdapter {
 	static val dateFormatter = DateFormat.instance
 	
 	override bindView(View view, Context context, Cursor cursor) {
-		val tweet = TwitterStatus.fromCursor(cursor)
+		val tweet = TweetItem.fromCursor(cursor)
 		val viewHolder = view.tag as TweetViewHolder
 		val isRetweet = tweet.retweetedId != null
 		viewHolder.profileImage.imageBitmap = null

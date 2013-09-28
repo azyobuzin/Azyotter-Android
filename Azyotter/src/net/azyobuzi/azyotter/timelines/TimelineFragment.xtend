@@ -32,7 +32,7 @@ import net.azyobuzi.azyotter.TwitterClient
 import net.azyobuzi.azyotter.configuration.Accounts
 import android.widget.Toast
 import net.azyobuzi.azyotter.FavoriteMarker
-import net.azyobuzi.azyotter.database.TwitterStatus
+import net.azyobuzi.azyotter.database.TweetItem
 import android.content.Intent
 import net.azyobuzi.azyotter.activities.UpdateStatusActivity
 
@@ -172,7 +172,7 @@ abstract class TimelineFragment extends ListFragment implements LoaderManager.Lo
 		adapter.swapCursor(null)
 	}
 	
-	def void doAction(TwitterStatus tweet, ActionType action) {
+	def void doAction(TweetItem tweet, ActionType action) {
 		val isRetweet = tweet.retweetedId != null
 		val baseId = if (isRetweet) tweet.retweetedId else tweet.id
 		val baseScreenName = if (isRetweet) tweet.retweetedUserScreenName else tweet.userScreenName
@@ -285,7 +285,7 @@ class TimelineGestureListener extends GestureDetector.SimpleOnGestureListener {
 	private def getTweetFromEvent(MotionEvent e) {
 		val pos = listView.pointToPosition(e.x as int, e.y as int)
 		if (pos == AdapterView.INVALID_POSITION) null
-		else TwitterStatus.fromCursor(listView.getItemAtPosition(pos) as Cursor)
+		else TweetItem.fromCursor(listView.getItemAtPosition(pos) as Cursor)
 	}
 	
 	override onSingleTapConfirmed(MotionEvent e) {

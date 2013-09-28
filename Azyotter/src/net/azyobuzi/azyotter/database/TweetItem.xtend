@@ -4,7 +4,7 @@ import java.util.Date
 import android.database.Cursor
 
 @Data
-class TwitterStatus {
+class TweetItem {
 	long id
 	Long retweetedId
 	long inReplyToUserId
@@ -44,7 +44,7 @@ class TwitterStatus {
 	Boolean retweetedUserVerified
 	
 	static def fromCursor(Cursor cursor) {
-		new TwitterStatus(
+		new TweetItem(
 			cursor.getLong(0),
 			if (cursor.isNull(1)) null else cursor.getLong(1),
 			cursor.getLong(2),

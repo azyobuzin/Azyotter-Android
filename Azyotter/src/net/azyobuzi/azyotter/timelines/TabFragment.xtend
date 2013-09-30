@@ -18,9 +18,10 @@ import org.msgpack.MessagePack
 import net.azyobuzi.azyotter.database.TweetEntities
 
 abstract class TabFragment extends TimelineFragment implements LoaderManager.LoaderCallbacks<Cursor> {
-	protected var Tab tab
-	protected var TweetAdapter adapter
+	protected  Tab tab
+	protected  TweetAdapter adapter
 	static val CACHED_TWEETS_LOADER_ID = 0
+	Bundle scrollPosBundle
 		
 	override onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState)
@@ -29,6 +30,7 @@ abstract class TabFragment extends TimelineFragment implements LoaderManager.Loa
 			if (savedInstanceState.containsKey("tab_id")){
 				tab = Tabs.list.filter[it.id == savedInstanceState.getLong("tab_id")].head
 			}
+			scrollPosBundle = savedInstanceState
 		}
 				
 		adapter = new TweetAdapter(activity)
@@ -135,6 +137,11 @@ abstract class TabFragment extends TimelineFragment implements LoaderManager.Loa
 	
 	override onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		adapter.swapCursor(data)
+		
+		if (scrollPosBundle != null) {
+			restoreScrollPosition(scrollPosBundle)
+			scrollPosBundle = null
+		}
 	}
 	
 	override onLoaderReset(Loader<Cursor> loader) {

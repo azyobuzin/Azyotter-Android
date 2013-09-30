@@ -27,7 +27,7 @@ import android.widget.Toast
 import android.widget.BaseAdapter
 import android.support.v4.view.GestureDetectorCompat
 
-class TimelineFragment extends ListFragment {
+abstract class TimelineFragment extends ListFragment {
 	protected var Handler handler
 		
 	override onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -46,6 +46,24 @@ class TimelineFragment extends ListFragment {
 			gestureDetector.onTouchEvent(event)
 			false
 		]
+	}
+	
+	override onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState)
+		
+		val first = listView.getChildAt(0)
+		if (first != null) {
+			outState.putInt("scrollPos", listView.firstVisiblePosition)
+			outState.putInt("scrollTop", first.top)
+		}
+	}
+	
+	def restoreScrollPosition(Bundle bundle) {
+		val pos = bundle.getInt("scrollPos", -1)
+		val top = bundle.getInt("scrollTop", -1)
+		if (pos != -1 && top != -1) {
+			listView.setSelectionFromTop(pos, top)
+		}
 	}
 	
 	protected def notifyAdapterDataSetChanged() {

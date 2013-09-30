@@ -40,7 +40,7 @@ import org.msgpack.MessagePack
 import net.azyobuzi.azyotter.database.TweetEntities
 import android.net.Uri
 
-abstract class TimelineFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+abstract class TabFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 	protected var Handler handler
 	protected var Tab tab
 	protected var TweetAdapter adapter
@@ -284,12 +284,12 @@ class CachedTweetsLoader extends AsyncTaskLoader<Cursor> {
 }
 
 class TimelineGestureListener extends GestureDetector.SimpleOnGestureListener {
-	new(TimelineFragment fragment) {
+	new(TabFragment fragment) {
 		this.fragment = fragment
 		this.listView = fragment.listView
 	}
 	
-	val TimelineFragment fragment
+	val TabFragment fragment
 	val ListView listView
 	
 	private def getTweetFromEvent(MotionEvent e) {

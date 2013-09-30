@@ -9,12 +9,12 @@ import android.view.MenuItem
 import android.support.v7.app.ActionBarActivity
 import android.support.v4.view.ViewPager
 import net.azyobuzi.azyotter.configuration.Tabs
-import net.azyobuzi.azyotter.timelines.TimelineFragment
+import net.azyobuzi.azyotter.timelines.TabFragment
 import java.util.ArrayList
 import net.azyobuzi.azyotter.configuration.TabType
-import net.azyobuzi.azyotter.timelines.HomeTimelineFragment
+import net.azyobuzi.azyotter.timelines.HomeTabFragment
 import android.support.v4.app.FragmentStatePagerAdapter
-import net.azyobuzi.azyotter.timelines.MentionsTimelineFragment
+import net.azyobuzi.azyotter.timelines.MentionsTabFragment
 import android.net.Uri
 import android.support.v4.view.MenuItemCompat
 
@@ -103,7 +103,7 @@ class MainActivity extends ActionBarActivity {
 }
 
 class TimelinePagerAdapter extends FragmentStatePagerAdapter{
-	public val fragments = new ArrayList<TimelineFragment>()
+	public val fragments = new ArrayList<TabFragment>()
 	val MainActivity activity
 	
 	new(MainActivity activity) {
@@ -133,8 +133,8 @@ class TimelinePagerAdapter extends FragmentStatePagerAdapter{
 		fragments.clear()
 		Tabs.list.forEach[
 			val fragment = switch it.type{
-				case TabType.HOME: HomeTimelineFragment.createInstance(it)
-				case TabType.MENTIONS: MentionsTimelineFragment.createInstance(it)
+				case TabType.HOME: HomeTabFragment.createInstance(it)
+				case TabType.MENTIONS: MentionsTabFragment.createInstance(it)
 				default: null
 			}
 			fragment.onCompleteReload = [| activity.completedReload()]

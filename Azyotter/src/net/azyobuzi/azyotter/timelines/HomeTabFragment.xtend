@@ -1,16 +1,16 @@
 package net.azyobuzi.azyotter.timelines
 
 import net.azyobuzi.azyotter.configuration.Tab
-import net.azyobuzi.azyotter.configuration.Accounts
-import java.util.ArrayList
 import twitter4j.Status
+import net.azyobuzi.azyotter.configuration.Accounts
 import net.azyobuzi.azyotter.TwitterClient
 import twitter4j.Paging
+import java.util.ArrayList
 import net.azyobuzi.azyotter.FavoriteMarker
 
-class MentionsTimelineFragment extends TimelineFragment {
+class HomeTabFragment extends TabFragment {
 	static def createInstance(Tab tab){
-		val instance = new MentionsTimelineFragment()
+		val instance = new HomeTabFragment()
 		instance.tab = tab
 		instance
 	}
@@ -21,7 +21,7 @@ class MentionsTimelineFragment extends TimelineFragment {
 		val accounts = (if (tab.allUsers) Accounts.list else Accounts.list.filter[tab.users.contains(it.id)]).toList()
 		loadedAccounts = 0
 		val newTweets = new ArrayList<Status>()
-		accounts.forEach[account | new TwitterClient(account).getMentions(new Paging(1, 50), [
+		accounts.forEach[account | new TwitterClient(account).getHomeTimeline(new Paging(1, 50), [
 			it.forEach[
 				newTweets.add(it)
 				val tweet = if (it.retweet) it.retweetedStatus else it

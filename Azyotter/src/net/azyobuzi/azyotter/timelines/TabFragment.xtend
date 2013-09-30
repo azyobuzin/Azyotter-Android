@@ -11,64 +11,26 @@ import android.support.v4.content.AsyncTaskLoader
 import android.content.Context
 import net.azyobuzi.azyotter.database.CachedTweetsSQLite
 import android.database.SQLException
-import android.support.v4.app.ListFragment
-import android.os.Handler
 import net.azyobuzi.azyotter.configuration.Tab
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import net.azyobuzi.azyotter.R
 import net.azyobuzi.azyotter.configuration.Tabs
-import android.view.GestureDetector
-import android.widget.ListView
-import android.support.v4.view.GestureDetectorCompat
-import android.view.MotionEvent
-import android.widget.AdapterView
-import net.azyobuzi.azyotter.configuration.ActionType
-import net.azyobuzi.azyotter.configuration.Setting
-import net.azyobuzi.azyotter.activities.AnonymousDialogFragment
-import android.app.AlertDialog
-import java.util.ArrayList
-import net.azyobuzi.azyotter.TwitterClient
-import net.azyobuzi.azyotter.configuration.Accounts
-import android.widget.Toast
-import net.azyobuzi.azyotter.FavoriteMarker
-import net.azyobuzi.azyotter.database.TweetItem
-import android.content.Intent
-import net.azyobuzi.azyotter.activities.UpdateStatusActivity
 import static net.azyobuzi.azyotter.database.TweetItem.*
 import org.msgpack.MessagePack
 import net.azyobuzi.azyotter.database.TweetEntities
-import android.net.Uri
 
-abstract class TabFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
-	protected var Handler handler
+abstract class TabFragment extends TimelineFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 	protected var Tab tab
 	protected var TweetAdapter adapter
 	static val CACHED_TWEETS_LOADER_ID = 0
-	
-	override onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		inflater.inflate(R.layout.timeline, container, false)
-	}
-	
+		
 	override onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState)
-		
-		handler = new Handler()
 		
 		if (savedInstanceState != null){
 			if (savedInstanceState.containsKey("tab_id")){
 				tab = Tabs.list.filter[it.id == savedInstanceState.getLong("tab_id")].head
 			}
 		}
-		
-		val gestureListener = new TimelineGestureListener(this)
-		val gestureDetector = new GestureDetectorCompat(activity, gestureListener)
-			=> [onDoubleTapListener = gestureListener]
-		listView.onTouchListener = [v, event |
-			gestureDetector.onTouchEvent(event)
-			false
-		]
-		
+				
 		adapter = new TweetAdapter(activity)
 		setListAdapter(adapter)
 		loaderManager.initLoader(CACHED_TWEETS_LOADER_ID, null, this)
@@ -168,7 +130,7 @@ abstract class TabFragment extends ListFragment implements LoaderManager.LoaderC
 	}
 		
 	override onCreateLoader(int id, Bundle args) {
-		new CachedTweetsLoader(activity, tab.id) => [forceLoad()]
+		new CachedTweetsLoader(activity, tab.id)
 	}
 	
 	override onLoadFinished(Loader<Cursor> loader, Cursor data) {
@@ -178,89 +140,6 @@ abstract class TabFragment extends ListFragment implements LoaderManager.LoaderC
 	override onLoaderReset(Loader<Cursor> loader) {
 		adapter.swapCursor(null)
 	}
-	
-	def void doAction(TweetItem tweet, ActionType action) {
-		val isRetweet = tweet.retweetedId != null
-		val baseId = if (isRetweet) tweet.retweetedId else tweet.id
-		val baseScreenName = if (isRetweet) tweet.retweetedUserScreenName else tweet.userScreenName
-		val account = Accounts.activeAccount
-		
-		switch action {
-			case ActionType.OPEN_MENU: {
-				val actions = new ArrayList<ActionItem>() => [
-					add(new ActionItem(getText(R.string.reply), [| doAction(tweet, ActionType.REPLY)]))
-					add(new ActionItem(getText(
-						if (FavoriteMarker.isFavorited(Accounts.activeAccount, baseId)) R.string.remove_from_favorite
-						else R.string.add_to_favorite
-					), [| doAction(tweet, ActionType.FAVORITE)]))
-					add(new ActionItem(getText(R.string.retweet), [| doAction(tweet, ActionType.RETWEET)]))
-					addAll(tweet.entities.urls.map[new ActionItem(it.expandedUrl, [|
-						startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(it.url)))
-					])])
-				]
-				new AnonymousDialogFragment([f, b |
-					new AlertDialog.Builder(f.activity)
-						.setTitle("@" + baseScreenName + ": " + tweet.displayText)
-						.setItems(actions.map[it.name].toArray(#[]), [d, which |
-							actions.get(which).action.run()
-						])
-						.create()
-				], null).show(fragmentManager, "tweetMenu")
-			}
-			case ActionType.REPLY: {
-				startActivity(new Intent(activity, UpdateStatusActivity)
-					.putExtra("internal", true)
-					.putExtra("in_reply_to_status_id", baseId)
-					.putExtra("in_reply_to_screen_name", baseScreenName)
-					.putExtra(Intent.EXTRA_TEXT, "@" + baseScreenName + " ")
-				)
-			}
-			case ActionType.FAVORITE: {
-				val client = new TwitterClient(account)
-				if (FavoriteMarker.isFavorited(Accounts.activeAccount, baseId))
-					client.destroyFavorite(baseId, [
-						FavoriteMarker.unmark(account, baseId)
-						FavoriteMarker.save()
-						handler.post([| adapter.notifyDataSetChanged()])
-					], [te, method |
-						handler.post([|
-							Toast.makeText(activity,
-								getText(R.string.unfavorite_failed) + ":\n" + te.message,
-								Toast.LENGTH_SHORT
-							).show()
-						])
-					])
-				else client.createFavorite(baseId, [
-						FavoriteMarker.mark(account, baseId)
-						FavoriteMarker.save()
-						handler.post([| adapter.notifyDataSetChanged()])
-					], [te, method |
-						handler.post([|
-							Toast.makeText(activity,
-								getText(R.string.favorite_failed) + ":\n" + te.message,
-								Toast.LENGTH_SHORT
-							).show()
-						])
-					])
-			}
-			case ActionType.RETWEET: {
-				new TwitterClient(account).retweetStatus(baseId, [], [te, method |
-					handler.post([|
-						Toast.makeText(activity,
-							getText(R.string.retweet_failed) + ":\n" + te.message,
-							Toast.LENGTH_SHORT
-						).show()
-					])
-				])
-			}
-		}
-	}
-}
-
-@Data
-class ActionItem {
-	CharSequence name
-	Runnable action
 }
 
 class CachedTweetsLoader extends AsyncTaskLoader<Cursor> {
@@ -270,6 +149,7 @@ class CachedTweetsLoader extends AsyncTaskLoader<Cursor> {
 	}
 	
 	val long tabId
+	Cursor cache
 	
 	override loadInBackground() {
 		try {
@@ -281,37 +161,32 @@ class CachedTweetsLoader extends AsyncTaskLoader<Cursor> {
 			null
 		}
 	}
-}
-
-class TimelineGestureListener extends GestureDetector.SimpleOnGestureListener {
-	new(TabFragment fragment) {
-		this.fragment = fragment
-		this.listView = fragment.listView
+	
+	override deliverResult(Cursor data) {
+		if (!isReset()) {
+			cache = data
+			super.deliverResult(data)
+		}
 	}
 	
-	val TabFragment fragment
-	val ListView listView
-	
-	private def getTweetFromEvent(MotionEvent e) {
-		val pos = listView.pointToPosition(e.x as int, e.y as int)
-		if (pos == AdapterView.INVALID_POSITION) null
-		else TweetItem.fromCursor(listView.getItemAtPosition(pos) as Cursor)
+	override protected onStartLoading() {
+		if (cache != null)
+			deliverResult(cache)
+		else
+			forceLoad()
 	}
 	
-	override onSingleTapConfirmed(MotionEvent e) {
-		val tweet = getTweetFromEvent(e)
-		if (tweet != null) {
-			fragment.doAction(tweet, Setting.singleTapAction)
-			true
-		} else false
+	override protected onStopLoading() {
+		cancelLoad()
 	}
 	
-	override onDoubleTap(MotionEvent e) {
-		val tweet = getTweetFromEvent(e)
-		if (tweet != null) {
-			fragment.doAction(tweet, Setting.doubleTapAction)
-			true
-		} else false
+	override protected onReset() {
+		super.onReset()
+		onStopLoading()
+		if (cache != null) {
+			cache.close()
+			cache = null
+		}
 	}
 	
 }
